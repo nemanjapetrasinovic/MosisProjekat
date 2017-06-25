@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "340090999046",
+    "firebase_url": "https://mosisprojekat-972aa.firebaseio.com",
+    "project_id": "mosisprojekat-972aa",
+    "storage_bucket": "mosisprojekat-972aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340090999046:android:3126e5706a0c3b54",
+        "android_client_info": {
+          "package_name": "com.example.nemanja.mosisprojekat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340090999046-d906h921i97kne90jp3m1o7jctmp353i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nemanja.mosisprojekat",
+            "certificate_hash": "d813a8afa88231a7ed67f4b5ddba403a7805d935"
+          }
+        },
+        {
+          "client_id": "340090999046-um7h3b1v36ku2gv9300g50n8jncctg4t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYfiKIE8VllA7lg7D3hB20hq5iAxleW_M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340090999046-um7h3b1v36ku2gv9300g50n8jncctg4t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
