@@ -95,22 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                         {
                             singIn(username,password);
                             UpdateUserProfile();
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if (user != null) {
-                                // Name, email address, and profile photo Url
-                                String name = user.getDisplayName();
-                                String email = user.getEmail();
-                                Uri photoUrl = user.getPhotoUrl();
-
-                                // The user's ID, unique to the Firebase project. Do NOT use this value to
-                                // authenticate with your backend server, if you have one. Use
-                                // FirebaseUser.getToken() instead.
-                                String uid = user.getUid();
-                            }
-
                             Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
-                            intent.putExtra("name",user.getDisplayName());
-                            intent.putExtra("email",user.getEmail());
                             RegisterActivity.this.startActivity(intent);
 
                         }
@@ -159,21 +144,5 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    public void GetUserData()
-    {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getToken() instead.
-            String uid = user.getUid();
-        }
     }
 }
