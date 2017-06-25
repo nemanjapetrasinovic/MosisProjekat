@@ -64,10 +64,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        Intent intent=getIntent();
-        TextView userInfo=(TextView) findViewById(R.id.userInfo);
+        //Intent intent=getIntent();
+        //TextView userInfo=(TextView) findViewById(R.id.userInfo);
         //Log.d("podatal",intent.getStringExtra("name").toString());
-        userInfo.setText(intent.getStringExtra("name").toString());
+        //userInfo.setText(intent.getStringExtra("name").toString());
         return true;
     }
 
