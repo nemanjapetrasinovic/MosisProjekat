@@ -1,7 +1,12 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,19 +14,35 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private StorageReference mStorageRef;
+
+    private static int RESULT_LOAD_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +72,18 @@ public class RegisterActivity extends AppCompatActivity {
                 createAccount();
             }
         });
+
+        final Button buttonSelectPicture=(Button) findViewById(R.id.buttonAddPicture);
+        buttonSelectPicture.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(
+                        Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -68,15 +101,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void createAccount(){
-        EditText nameEdit=(EditText) findViewById(R.id.editTextName);
-        EditText surnameEdit=(EditText) findViewById(R.id.editTextSurname);
+        EditText emailEdit=(EditText) findViewById(R.id.editTextEmail);
+        EditText passwordEdit=(EditText) findViewById(R.id.editTextPassword);
 
-        String name=nameEdit.getText().toString();
-        String surname=surnameEdit.getText().toString();
-
-        Intent intent=getIntent();
-        final String username=intent.getStringExtra("username");
-        final String password=intent.getStringExtra("password");
+        final String username=emailEdit.getText().toString();
+        final String password=emailEdit.getText().toString();
 
         mAuth.createUserWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -128,10 +157,14 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void UpdateUserProfile()
     {
+        EditText nameEdit=(EditText) findViewById(R.id.editTextName);
+        EditText lastnameEdit=(EditText) findViewById(R.id.editTextLastname);
+        EditText phoneEdit=(EditText) findViewById(R.id.editTextPhone);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName("Jane Q. User")
+                .setDisplayName(nameEdit.getText().toString()+' '+lastnameEdit.getText().toString())
                 .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
                 .build();
 
@@ -142,6 +175,63 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User profile updated.");
                         }
+                    }
+                });
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("MosisDB");
+        DatabaseReference usersRef = myRef.child("users");
+
+        Traveller t=new Traveller();
+        t.firstname=nameEdit.getText().toString();
+        t.lastname=lastnameEdit.getText().toString();
+        t.phonenumber=phoneEdit.getText().toString();
+
+        Map<String, Traveller> users = new HashMap<String, Traveller>();
+
+        users.put(user.getUid(),t);
+
+        usersRef.setValue(users);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            ImageView imageView = (ImageView) findViewById(R.id.imageView2);
+            imageView.setImageURI(selectedImage);
+
+        }
+
+    }
+
+    public void UploadFile(String path)
+    {
+        Uri file = Uri.fromFile(new File(path));
+        StorageReference riversRef = mStorageRef.child("profile");
+
+        riversRef.putFile(file)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // Get a URL to the uploaded content
+                        @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference myRef = database.getReference("MosisDB");
+                        Map<String, Object> travellerUpdates = new HashMap<String, Object>();
+                        travellerUpdates.put("picture", downloadUrl);
+
+                        myRef.updateChildren(travellerUpdates);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                        // ...
                     }
                 });
     }

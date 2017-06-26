@@ -55,15 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonRegister.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                EditText usernameEdit=(EditText) findViewById(R.id.editText1);
-                EditText passwordEdit=(EditText) findViewById(R.id.editText2);
-
-                String username=usernameEdit.getText().toString();
-                String password=passwordEdit.getText().toString();
-
                 Intent register=new Intent(LoginActivity.this.getApplicationContext(),RegisterActivity.class);
-                register.putExtra("username",username);
-                register.putExtra("password",password);
                 LoginActivity.this.startActivity(register);
             }
         });
@@ -104,6 +96,11 @@ public class LoginActivity extends AppCompatActivity {
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
                             Toast.makeText(LoginActivity.this, "Nije uspelo",
                                     Toast.LENGTH_SHORT).show();
+                        }
+
+                        else {
+                            Intent register=new Intent(LoginActivity.this.getApplicationContext(),RegisterActivity.class);
+                            LoginActivity.this.startActivity(register);
                         }
 
                         // ...
