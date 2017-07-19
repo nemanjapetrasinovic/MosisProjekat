@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -32,6 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private StorageReference mStorageRef;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private DatabaseReference mDatabase;
+    private Uri selectedImage;
 
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -83,7 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivityForResult(i, RESULT_LOAD_IMAGE);
             }
         });
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
     }
 
     @Override
@@ -105,28 +111,26 @@ public class RegisterActivity extends AppCompatActivity {
         EditText passwordEdit=(EditText) findViewById(R.id.editTextPassword);
 
         final String username=emailEdit.getText().toString();
-        final String password=emailEdit.getText().toString();
+        final String password=passwordEdit.getText().toString();
 
         mAuth.createUserWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Nije uspelo",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
                             singIn(username,password);
                             UpdateUserProfile();
-                            Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
-                            RegisterActivity.this.startActivity(intent);
+                            Intent i=new Intent(RegisterActivity.this.getApplicationContext(),MainActivity.class);
+                            RegisterActivity.this.startActivity(i);
 
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
                         }
 
                         // ...
@@ -163,9 +167,35 @@ public class RegisterActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        String userID=user.getUid();
+        StorageReference sRef = storageRef.child(userID+".jpg");
+
+        ImageView imageView = (ImageView) findViewById(R.id.imageView2);
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        Bitmap bitmap = imageView.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = sRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+            }
+        });
+
+
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(nameEdit.getText().toString()+' '+lastnameEdit.getText().toString())
-                .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
+                .setPhotoUri(Uri.parse(userID+".jpg"))
                 .build();
 
         user.updateProfile(profileUpdates)
@@ -178,20 +208,11 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("MosisDB");
-        DatabaseReference usersRef = myRef.child("users");
 
-        Traveller t=new Traveller();
-        t.firstname=nameEdit.getText().toString();
-        t.lastname=lastnameEdit.getText().toString();
-        t.phonenumber=phoneEdit.getText().toString();
-
-        Map<String, Traveller> users = new HashMap<String, Traveller>();
-
-        users.put(user.getUid(),t);
-
-        usersRef.setValue(users);
+        mDatabase= FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
+        mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());
+        mDatabase.child("user").child(user.getUid()).child("phone").setValue(phoneEdit.getText().toString());
     }
 
     @Override
@@ -199,7 +220,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
+            selectedImage = data.getData();
             String[] filePathColumn = { MediaStore.Images.Media.DATA };
             ImageView imageView = (ImageView) findViewById(R.id.imageView2);
             imageView.setImageURI(selectedImage);
@@ -208,31 +229,4 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    public void UploadFile(String path)
-    {
-        Uri file = Uri.fromFile(new File(path));
-        StorageReference riversRef = mStorageRef.child("profile");
-
-        riversRef.putFile(file)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        // Get a URL to the uploaded content
-                        @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        DatabaseReference myRef = database.getReference("MosisDB");
-                        Map<String, Object> travellerUpdates = new HashMap<String, Object>();
-                        travellerUpdates.put("picture", downloadUrl);
-
-                        myRef.updateChildren(travellerUpdates);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle unsuccessful uploads
-                        // ...
-                    }
-                });
-    }
 }
