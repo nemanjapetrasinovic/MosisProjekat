@@ -209,10 +209,15 @@ public class RegisterActivity extends AppCompatActivity {
                 });
 
 
+        Traveller t=new Traveller();
+        t.setFirstname(nameEdit.getText().toString());
+        t.setLastname(lastnameEdit.getText().toString());
+        t.setPhonenumber(phoneEdit.getText().toString());
         mDatabase= FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
+        /*mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
         mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());
-        mDatabase.child("user").child(user.getUid()).child("phone").setValue(phoneEdit.getText().toString());
+        mDatabase.child("user").child(user.getUid()).child("phone").setValue(phoneEdit.getText().toString());*/
+        mDatabase.child("user").child(user.getUid()).setValue(t);
     }
 
     @Override
