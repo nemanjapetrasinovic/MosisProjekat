@@ -103,7 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Show rationale and request permission.
         }
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        /*final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null)
         {
             DatabaseReference userRef=mDatabase.child("user").child(user.getUid());
@@ -128,7 +128,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                             // Local temp file has been created
                             Bitmap myBitmap = BitmapFactory.decodeFile(localfile2.getAbsolutePath());
-                            Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,myBitmap.getHeight()/10,myBitmap.getWidth()/10,false);
+                            int width = myBitmap.getWidth();
+                            int height = myBitmap.getHeight();
+
+                            int maxWidth=150;
+                            int maxHeight=150;
+
+                            Log.v("Pictures", "Width and height are " + width + "--" + height);
+
+                            if (width > height) {
+                                // landscape
+                                float ratio = (float) width / maxWidth;
+                                width = maxWidth;
+                                height = (int)(height / ratio);
+                            } else if (height > width) {
+                                // portrait
+                                float ratio = (float) height / maxHeight;
+                                height = maxHeight;
+                                width = (int)(width / ratio);
+                            } else {
+                                // square
+                                height = maxHeight;
+                                width = maxWidth;
+                            }
+
+                            Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,width,height,false);
                             LatLng sydney = new LatLng(-34, 151);
                             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(myScaledBitmap);
                             MarkerOptions markerOptions = new MarkerOptions().position(sydney)
@@ -156,7 +180,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
             });
-        }
+        }*/
 
         /*FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(dataSnapshot!=null)

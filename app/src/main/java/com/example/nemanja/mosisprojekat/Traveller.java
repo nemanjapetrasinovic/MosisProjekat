@@ -9,6 +9,8 @@ class Traveller {
     public int score;
     public List<String> friends;
     public String picture;
+    public float latitude;
+    public float longitude;
 
     public String getFirstname() {
         return firstname;
