@@ -213,6 +213,7 @@ public class RegisterActivity extends AppCompatActivity {
         t.setFirstname(nameEdit.getText().toString());
         t.setLastname(lastnameEdit.getText().toString());
         t.setPhonenumber(phoneEdit.getText().toString());
+        t.setEmail(user.getEmail());
         mDatabase= FirebaseDatabase.getInstance().getReference();
         /*mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
         mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());

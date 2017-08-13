@@ -48,7 +48,8 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".ShowFriendsActivity"
-            android:label="@string/title_activity_show_friends"></activity>
+            android:label="@string/title_activity_show_friends" />
+        <activity android:name=".FriendInfoActivity"></activity>
     </application>
 
 </manifest>

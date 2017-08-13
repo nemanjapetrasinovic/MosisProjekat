@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -42,6 +43,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
     private static final String TAG = MainActivity.class.getSimpleName();
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private HashMap<String, String> markersMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +104,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
 
                         userRef.addValueEventListener(new ValueEventListener() {
                             @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
+                            public void onDataChange(final DataSnapshot dataSnapshot) {
                                 // This method is called once with the initial value and again
                                 // whenever data at this location is updated.
                                 final Traveller value = dataSnapshot.getValue(Traveller.class);
@@ -150,10 +152,13 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                                         BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(myScaledBitmap);
                                         MarkerOptions markerOptions = new MarkerOptions().position(sydney)
                                                 .title(value.getFirstname()+ ' '+value.getLastname())
-                                                .snippet(url)
+                                                .snippet(value.getEmail())
                                                 .icon(icon);
 
                                         Marker mMarker = mMap.addMarker(markerOptions);
+                                        if(markersMap==null)
+                                            markersMap=new HashMap<String, String>();
+                                        markersMap.put(value.getEmail(),dataSnapshot.getKey());
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -186,7 +191,9 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(ShowFriendsActivity.this,MainActivity.class);
+                Intent intent = new Intent(ShowFriendsActivity.this,FriendInfoActivity.class);
+                intent.putExtra("email",marker.getSnippet());
+                intent.putExtra("key",markersMap.get(marker.getSnippet()));
                 startActivity(intent);
             }
         });

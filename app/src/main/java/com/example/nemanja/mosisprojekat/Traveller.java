@@ -11,6 +11,7 @@ class Traveller {
     public String picture;
     public float latitude;
     public float longitude;
+    public String email;
 
     public String getFirstname() {
         return firstname;
@@ -62,5 +63,28 @@ class Traveller {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
