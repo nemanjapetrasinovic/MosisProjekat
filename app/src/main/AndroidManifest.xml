@@ -9,6 +9,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature android:name="android.hardware.location.gps" />
 
@@ -49,7 +50,12 @@
         <activity
             android:name=".ShowFriendsActivity"
             android:label="@string/title_activity_show_friends" />
-        <activity android:name=".FriendInfoActivity"></activity>
+        <activity android:name=".FriendInfoActivity" />
+
+        <service
+            android:name=".MyService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

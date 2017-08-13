@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
+    private int mNotificationId = 001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +158,23 @@ public class MainActivity extends AppCompatActivity
             startActivity(ShowFriendsOnMap);
         } else if (id == R.id.nav_slideshow) {
 
+            final NotificationCompat.Builder mBuilder =
+                    (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_menu_camera)
+                            .setContentTitle("My notification")
+                            .setContentText("Hello World!");
+            final NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+
+            mBuilder.setVibrate(new long[] {125,75,125,275,200,275,125,75,125,275,200,600,200,600});
+
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+            mNotificationId++;
+
         } else if (id == R.id.nav_manage) {
+
+            startService(new Intent(this,MyService.class));
 
         } else if (id == R.id.nav_share) {
 
