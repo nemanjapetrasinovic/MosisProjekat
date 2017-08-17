@@ -1,7 +1,11 @@
 package com.example.nemanja.mosisprojekat;
 
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -60,12 +64,26 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mDatabase;
     private int mNotificationId = 001;
 
+    Intent intentMyService;
+    ComponentName service;
+    BroadcastReceiver receiver;
+    String GPS_FILTER = "com.example.rankovic.mylocationtracker.LOCATION";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Location Service start
+        intentMyService = new Intent(this, LocationService.class);
+        service = startService(intentMyService);
+
+        IntentFilter mainFilter = new IntentFilter(GPS_FILTER);
+        receiver = new MyMainLocalReceiver();
+        registerReceiver(receiver, mainFilter);
+        //Location Service end
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -245,6 +263,19 @@ public class MainActivity extends AppCompatActivity
                     // Handle any errors
                 }
             });
+        }
+    }
+
+    private class MyMainLocalReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            double latitude = intent.getDoubleExtra("latitude", -1);
+            double longitude = intent.getDoubleExtra("longitude", -1);
+            /*EditText lon = (EditText) findViewById(R.id.lon);
+            EditText lat = (EditText) findViewById(R.id.lat);
+            lon.setText(String.valueOf(longitude));
+            lat.setText(String.valueOf(latitude));*/
+            Toast.makeText(getApplicationContext(), String.valueOf(latitude) +  " " + String.valueOf(longitude), Toast.LENGTH_LONG).show();
         }
     }
 }
