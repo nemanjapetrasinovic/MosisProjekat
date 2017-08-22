@@ -1,31 +1,49 @@
 package com.example.nemanja.mosisprojekat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 import java.util.Set;
 
 public class FriendsSearchActivity extends AppCompatActivity implements BluetoothFriendsAdapter.BluetoothFriendsAdapterOnClickHandler {
 
+    private boolean request_sent = false;
     /**
      * Tag for Log
      */
@@ -59,48 +77,91 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
     private BluetoothFriendsAdapter mBluetoothFriendsAdapter;
     private RecyclerView mRecyclerView;
 
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    //private static final String TAG = MainActivity.class.getSimpleName();
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private HashMap<String, String> markersMap;
+    Traveller traveller;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            getMenuInflater().inflate(R.menu.bluetooth, menu);
+            return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBluetooth = new Bluetooth(getApplicationContext(), mHandler);
-        // Setup the window
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        //setContentView(R.layout.activity_friends_search);
-        setContentView(R.layout.activity_bluetooth);
-        // Set result CANCELED in case the user backs out
-        setResult(Activity.RESULT_CANCELED);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_bluetooth);
-        LinearLayoutManager layoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mAuth= FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null)
+        {
+            Query q =mDatabase.child("user").orderByChild("email").equalTo("n@n.rs").limitToFirst(1);
+            DatabaseReference userRef = q.getRef();
 
-        ArrayList<Traveller> l = new ArrayList<Traveller>();
-        for(int i = 0; i < 10; i++) {
-            //l.add(1);
+            userRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+                    Traveller value = dataSnapshot.getValue(Traveller.class);
+                    traveller = value;
+                    String userID = user.getUid();
+                }
+                @Override
+
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
         }
 
-        mBluetoothFriendsAdapter = new BluetoothFriendsAdapter(this, this, l);
+        mBluetooth = new Bluetooth(getApplicationContext(), mHandler);
 
-        mRecyclerView.setAdapter(mBluetoothFriendsAdapter);
+        // Setup the window
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setContentView(R.layout.activity_friends_search);
+        setResult(Activity.RESULT_CANCELED);
+
 
         // Initialize the button to perform device discovery
-        /*Button scanButton = (Button) findViewById(R.id.button_scan);
+        Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 doDiscovery();
                 //v.setVisibility(View.GONE);
             }
         });
-        */
+
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
 
-        /*
-        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+
+        pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
 
 
@@ -113,7 +174,7 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
         ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
-        */
+
 
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -125,6 +186,11 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
 
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(!mBtAdapter.isEnabled()){
+            Intent enable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enable, 20);
+        }
+        //ensureDiscoverable();
 
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
@@ -133,8 +199,8 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
         if (pairedDevices.size() > 0) {
             //findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
-                //pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                mBluetoothFriendsAdapter.addToList(new Traveller());
+                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                //mBluetoothFriendsAdapter.addToList(new Traveller());
             }
         }
         /*
@@ -188,6 +254,8 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
             = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
+            request_sent = true;
+
             mBtAdapter.cancelDiscovery();
 
             // Get the device MAC address, which is the last 17 chars in the View
@@ -196,7 +264,13 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
 
             BluetoothDevice device = mBtAdapter.getRemoteDevice(address);
             // Attempt to connect to the device
+
+
             mBluetooth.connect(device, true);
+
+            /*String message = "Ovo je neki ID";
+            byte[] send = message.getBytes();
+            mBluetooth.write(send);*/
             // Create the result Intent and include the MAC address
 
         }
@@ -213,7 +287,7 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-                    //mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
                 }
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -227,57 +301,131 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
         }
     };
 
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Constants.MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case Bluetooth.STATE_CONNECTED:
-                            //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
-                            //mConversationArrayAdapter.clear();
-/*
-                            sendMessage();
-                            sendMessage("Druga");
-                            sendMessage("Treca");*/
-                            break;
-                        case Bluetooth.STATE_CONNECTING:
-                            //setStatus(R.string.title_connecting);
-                            break;
-                        case Bluetooth.STATE_LISTEN:
-                        case Bluetooth.STATE_NONE:
-                            //setStatus(R.string.title_not_connected);
-                            break;
-                    }
-                    break;
-                case Constants.MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    Toast.makeText(FriendsSearchActivity.this, "Wrote "
-                            + writeMessage, Toast.LENGTH_SHORT).show();
-                    break;
-                case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    Toast.makeText(FriendsSearchActivity.this, "Received "
-                            + readMessage, Toast.LENGTH_SHORT).show();
-                    break;
-                case Constants.MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    String mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    Toast.makeText(FriendsSearchActivity.this, "Connected to "
-                            + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+        private final Handler mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case Constants.MESSAGE_STATE_CHANGE:
+                        switch (msg.arg1) {
+                            case Bluetooth.STATE_CONNECTED:
+                                //setStatus(getString(R.string.title_connected_to, mConnectedDeviceName));
+                                //mConversationArrayAdapter.clear();
+    /*
+                                sendMessage();
+                                sendMessage("Druga");
+                                sendMessage("Treca");*/
+                                break;
+                            case Bluetooth.STATE_CONNECTING:
 
-                    break;
-                case Constants.MESSAGE_TOAST:
-                    Toast.makeText(FriendsSearchActivity.this, msg.getData().getString(Constants.TOAST),
-                            Toast.LENGTH_SHORT).show();
 
-                    break;
+                                break;
+                            case Bluetooth.STATE_LISTEN:
+                                int b = 1;
+                            case Bluetooth.STATE_NONE:
+                                //setStatus(R.string.title_not_connected);
+                                int c = 1;
+                                break;
+                        }
+                        break;
+                    case Constants.MESSAGE_WRITE:
+                        byte[] writeBuf = (byte[]) msg.obj;
+                        // construct a string from the buffer
+                        String writeMessage = new String(writeBuf);
+                        Toast.makeText(FriendsSearchActivity.this, "Wrote "
+                                + writeMessage, Toast.LENGTH_SHORT).show();
+                        break;
+                    case Constants.MESSAGE_READ:
+                        byte[] readBuf = (byte[]) msg.obj;
+                        // construct a string from the valid bytes in the buffer
+                        String readMessage = new String(readBuf, 0, msg.arg1);
+
+                        String[] niz = readMessage.split(" ");
+                        if(niz[0].compareTo("uzvratna") != 0) {
+                            //Toast.makeText(FriendsSearchActivity.this, "Received "
+                            //        + readMessage, Toast.LENGTH_SHORT).show();
+                            mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("friends").push().setValue(niz[0]);
+
+                            String message = mAuth.getCurrentUser().getUid();
+                            String m = "uzvratna " + message;
+                            byte[] send = m.getBytes();
+                            mBluetooth.write(send);
+                        }
+                        else{
+                            mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("friends").push().setValue(niz[1]);
+                        }
+                        break;
+                    case Constants.MESSAGE_DEVICE_NAME:
+                        // save the connected device's name
+                        String mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                        Toast.makeText(FriendsSearchActivity.this, "Connected to "
+                                + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                        //mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("friends").push().setValue("novi");
+
+                        if(!request_sent) {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    new AlertDialog.Builder(FriendsSearchActivity.this)
+                                            .setTitle("Confirm friend request")
+                                            .setMessage("Are you sure you want to become friends with a device\n")
+                                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Toast.makeText(FriendsSearchActivity.this, "You accepted friend request", Toast.LENGTH_SHORT).show();
+                                                    String message = mAuth.getCurrentUser().getUid();
+                                                    byte[] send = message.getBytes();
+                                                    mBluetooth.write(send);
+                                                }
+                                            })
+                                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Toast.makeText(FriendsSearchActivity.this, "You declined friend request", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .setIcon(android.R.drawable.ic_dialog_alert)
+                                            .show();
+                                }
+                            });
+                        }
+                        request_sent = false;
+                        break;
+                    case Constants.MESSAGE_TOAST:
+                        Toast.makeText(FriendsSearchActivity.this, msg.getData().getString(Constants.TOAST),
+                                Toast.LENGTH_SHORT).show();
+
+                        break;
+                }
+            }
+        };
+
+    private void ensureDiscoverable() {
+        if (mBtAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.secure_connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                doDiscovery();
+                return true;
+            }
+            case R.id.insecure_connect_scan: {
+                // Launch the DeviceListActivity to see devices and do scan
+                /*Intent serverIntent = new Intent(getActivity(), DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_INSECURE);*/
+                doDiscovery();
+                return true;
+            }
+            case R.id.discoverable: {
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
             }
         }
-    };
-
+        return false;
+    }
 }
+

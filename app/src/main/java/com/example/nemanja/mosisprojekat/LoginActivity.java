@@ -1,9 +1,9 @@
 package com.example.nemanja.mosisprojekat;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +22,13 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth=FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -92,6 +93,8 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            /*String address = BluetoothAdapter.getDefaultAdapter().getAddress();
+                            mDatabase.child("lookup").child(address).setValue(user.getUid());*/
                             Intent main=new Intent(LoginActivity.this.getApplicationContext(),MainActivity.class);
                             LoginActivity.this.startActivity(main);
                         } else {

@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -263,7 +262,7 @@ public class MainActivity extends AppCompatActivity
             EditText lat = (EditText) findViewById(R.id.lat);
             lon.setText(String.valueOf(longitude));
             lat.setText(String.valueOf(latitude));*/
-            Toast.makeText(getApplicationContext(), String.valueOf(latitude) +  " " + String.valueOf(longitude), Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), String.valueOf(latitude) +  " " + String.valueOf(longitude), Toast.LENGTH_LONG).show();
         }
     }
 }
