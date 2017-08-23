@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 1;
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
+    private static final int ACTIVITY_NEW_PLACE = 8;
     private String mTempPhotoPath;
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -60,6 +62,8 @@ public class MainActivity extends AppCompatActivity
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
     private int mNotificationId = 001;
+    private double longitude;
+    private double latitude;
 
     Intent intentMyService;
     ComponentName service;
@@ -268,8 +272,8 @@ public class MainActivity extends AppCompatActivity
     private class MyMainLocalReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            double latitude = intent.getDoubleExtra("latitude", -1);
-            double longitude = intent.getDoubleExtra("longitude", -1);
+            latitude = intent.getDoubleExtra("latitude", -1);
+            longitude = intent.getDoubleExtra("longitude", -1);
             /*EditText lon = (EditText) findViewById(R.id.lon);
             EditText lat = (EditText) findViewById(R.id.lat);
             lon.setText(String.valueOf(longitude));
@@ -356,13 +360,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // If the image capture activity was called and was successful
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            // Process the image and set it to the TextView
-            processAndSetImage();
-        } else {
-
-            // Otherwise, delete the temporary image file
-            BitmapUtils.deleteImageFile(this, mTempPhotoPath);
+        if (requestCode == REQUEST_IMAGE_CAPTURE){
+            if (resultCode == RESULT_OK) {
+                // Process the image and set it to the TextView
+                processAndSetImage();
+            } else {
+                // Otherwise, delete the temporary image file
+                BitmapUtils.deleteImageFile(this, mTempPhotoPath);
+            }
+        }
+        else if(requestCode == ACTIVITY_NEW_PLACE){
+            if (resultCode == RESULT_OK) {
+                Snackbar.make(findViewById(R.id.fab), "New place added", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         }
     }
 
@@ -385,6 +396,14 @@ public class MainActivity extends AppCompatActivity
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
             }
         });
+
+        Bundle bundle = new Bundle();
+        bundle.putString("path", mTempPhotoPath);
+        bundle.putDouble("longitude", longitude);
+        bundle.putDouble("latitude", latitude);
+        Intent i = new Intent(MainActivity.this, NewPlaceActivity.class);
+        i.putExtras(bundle);
+        startActivityForResult(i, ACTIVITY_NEW_PLACE);
 
     }
 

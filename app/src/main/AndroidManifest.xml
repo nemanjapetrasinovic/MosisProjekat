@@ -38,6 +38,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -79,7 +80,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".FriendsSearchActivity"></activity>
+        <activity android:name=".FriendsSearchActivity" />
+        <activity android:name=".NewPlaceActivity"></activity>
     </application>
 
 </manifest>

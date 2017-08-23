@@ -39,4 +39,11 @@
     <string name="permission_denied">Permission denied</string>
     <string name="imageview_description">The imageview that contains the emojified picture</string>
     <string name="no_faces_message">No Faces Detected</string>
+
+    <string name="editmyplace_name_label">Name:</string>
+    <string name="editmyplace_desc_label">Description:</string>
+    <string name="editmyplace_cancel_label">Cancel</string>
+    <string name="editmyplace_lat_label">Latitude:</string>
+    <string name="editmyplace_lon_label">Longitude:</string>
+    <string name="editmyplace_save_label">Save</string>
 </resources>

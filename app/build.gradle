@@ -9,7 +9,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-            }
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -26,11 +26,11 @@ dependencies {
     })
 
     //compile 'com.android.support:appcompat-v7:25.3.1'
+    //compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.firebase:firebase-database:11.0.2'
     compile 'com.google.firebase:firebase-auth:11.0.2'
-    //compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:design:25.1.0'
     compile 'com.google.firebase:firebase-core:11.0.2'
     compile 'com.google.firebase:firebase-storage:11.0.2'
