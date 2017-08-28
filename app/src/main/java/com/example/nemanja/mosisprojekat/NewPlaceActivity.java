@@ -91,7 +91,7 @@ public class NewPlaceActivity extends AppCompatActivity {
                     place.setOwner(mAuth.getCurrentUser().getUid());
 
                     mDatabase= FirebaseDatabase.getInstance().getReference();
-                    mDatabase.child("places").push().setValue(place);
+                    mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places").push().setValue(place);
 
                     setResult(RESULT_OK);
                     finish();

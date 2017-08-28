@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Traveller {
@@ -12,6 +13,15 @@ class Traveller {
     public float latitude;
     public float longitude;
     public String email;
+    public ArrayList<Place> places;
+
+    public ArrayList<Place> getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(ArrayList<Place> places) {
+        this.places = places;
+    }
 
     public String getFirstname() {
         return firstname;

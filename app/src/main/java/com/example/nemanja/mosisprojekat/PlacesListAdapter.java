@@ -2,6 +2,8 @@ package com.example.nemanja.mosisprojekat;
 
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,66 +13,79 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Nikola on 2017-08-20.
  */
 
-class BluetoothFriendsAdapter extends RecyclerView.Adapter<BluetoothFriendsAdapter.BluetoothFriendsAdapterViewHolder>{
+class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesListAdapterViewHolder>{
     private final Context mContext;
-    final private BluetoothFriendsAdapterOnClickHandler mClickHandler;
+    final private PlacesListAdapterOnClickHandler mClickHandler;
+    private Geocoder geocoder;
 
-    public interface BluetoothFriendsAdapterOnClickHandler {
+    public interface PlacesListAdapterOnClickHandler {
         void onClick(long date);
     }
 
     //private Cursor mCursor;
-    private ArrayList<Traveller> lista;
-    public BluetoothFriendsAdapter(@NonNull Context context, BluetoothFriendsAdapterOnClickHandler clickHandler, ArrayList<Traveller> l) {
+    private ArrayList<Place> lista;
+    public PlacesListAdapter(@NonNull Context context, PlacesListAdapterOnClickHandler clickHandler, ArrayList<Place> l) {
         mContext = context;
         mClickHandler = clickHandler;
         lista = l;
+        geocoder = new Geocoder(mContext, Locale.getDefault());
     }
 
-    public BluetoothFriendsAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public PlacesListAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        int layoutId = R.layout.bluetooth_list_item;
+        int layoutId = R.layout.place_list_item;
 
         View view = LayoutInflater.from(mContext).inflate(layoutId, viewGroup, false);
 
         view.setFocusable(true);
 
-        return new BluetoothFriendsAdapterViewHolder(view);
+        return new PlacesListAdapterViewHolder(view);
     }
 
-    public void onBindViewHolder(BluetoothFriendsAdapterViewHolder BluetoothFriendsAdapterViewHolder, int position) {
+    public void onBindViewHolder(PlacesListAdapterViewHolder placesListAdapterViewHolder, int position) {
         //mCursor.moveToPosition(position);
 
-        Traveller traveller = lista.get(position);
+        Place place = lista.get(position);
 
         /****************
          * Profile Icon *
          ****************/
         int profileImageId = 0;
-        BluetoothFriendsAdapterViewHolder.iconView.setImageResource(R.drawable.art_clouds);
+        placesListAdapterViewHolder.iconView.setImageResource(R.drawable.art_clouds);
 
         /****************
          * Name *
          ****************/
 
-        BluetoothFriendsAdapterViewHolder.nameView.setText("Nikola Rankovic");
+        placesListAdapterViewHolder.nameView.setText(place.getName());
 
-        /***********************
-         * Bluetooth id *
-         ***********************/
-
-        BluetoothFriendsAdapterViewHolder.bluetooth_idView.setText("22:22:6D:98:C2:00");
 
         /*************************
-         * FRIEND *
+         * COUNTRY *
          *************************/
-        BluetoothFriendsAdapterViewHolder.friendView.setText("FRIEND");
+
+
+        List<Address> addressList = null;
+        try {
+            addressList = geocoder.getFromLocation(44, 45, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(addressList != null && addressList.size() > 0) {
+            Address address = addressList.get(0);
+            placesListAdapterViewHolder.countryView.setText(address.getCountryName());
+        }
+
     }
 
 
@@ -80,30 +95,27 @@ class BluetoothFriendsAdapter extends RecyclerView.Adapter<BluetoothFriendsAdapt
         return lista.size();
     }
 
-    void swapCursor(ArrayList<Traveller> newList) {
+    void swapCursor(ArrayList<Place> newList) {
         lista = newList;
         notifyDataSetChanged();
     }
 
-    void addToList(Traveller t){
+    void addToList(Place t){
         lista.add(t);
         notifyDataSetChanged();
     }
 
-    class BluetoothFriendsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class PlacesListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final ImageView iconView;
-
         final TextView nameView;
-        final TextView bluetooth_idView;
-        final TextView friendView;
+        final TextView countryView;
 
-        BluetoothFriendsAdapterViewHolder(View view) {
+        PlacesListAdapterViewHolder(View view) {
             super(view);
 
-            iconView = (ImageView) view.findViewById(R.id.profile_icon);
-            nameView = (TextView) view.findViewById(R.id.name);
-            bluetooth_idView = (TextView) view.findViewById(R.id.bluetooth_id);
-            friendView = (TextView) view.findViewById(R.id.friend);
+            iconView = (ImageView) view.findViewById(R.id.place_item_icon);
+            nameView = (TextView) view.findViewById(R.id.place_item_name);
+            countryView = (TextView) view.findViewById(R.id.place_item_county);
 
             view.setOnClickListener(this);
         }

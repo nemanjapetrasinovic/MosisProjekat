@@ -8,4 +8,21 @@
     tools:context="com.example.nemanja.mosisprojekat.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <!--
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_places"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"/>
+
+
+    </LinearLayout>
+    -->
 </android.support.constraint.ConstraintLayout>
