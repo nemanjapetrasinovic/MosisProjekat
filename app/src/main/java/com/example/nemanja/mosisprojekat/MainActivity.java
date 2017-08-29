@@ -24,6 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -138,6 +139,17 @@ public class MainActivity extends AppCompatActivity
         storageRef = storage.getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        placesArrayList = new ArrayList<Place>();
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_places);
+        LinearLayoutManager layoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setHasFixedSize(true);
+
+        placesListAdapter = new PlacesListAdapter(this, this, placesArrayList);
+        mRecyclerView.setAdapter(placesListAdapter);
+
         DatabaseReference userRef = mDatabase.child("user").child(mAuth.getCurrentUser().getUid());
         final Gson gson=new Gson();
         userRef.addValueEventListener(new ValueEventListener() {
@@ -149,16 +161,12 @@ public class MainActivity extends AppCompatActivity
                 Object o=dataSnapshot.getValue();
                 String json=gson.toJson(o);
                 Traveller t=gson.fromJson(json,Traveller.class);
-                /*try {
-                    placesArrayList = t.getPlaces();
-                    for (Place place : placesArrayList) {
-                        //placesListAdapter.addToList(place);
-                    }
 
+
+                for (Place place : t.getPlaces()) {
+                    placesListAdapter.addToList(place);
+                    int i=1;
                 }
-                catch (Exception e){
-
-                }*/
 
             }
 
