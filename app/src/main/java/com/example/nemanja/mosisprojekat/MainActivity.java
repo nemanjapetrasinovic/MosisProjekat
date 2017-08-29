@@ -51,6 +51,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -138,15 +139,18 @@ public class MainActivity extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference userRef = mDatabase.child("user").child(mAuth.getCurrentUser().getUid());
-
+        final Gson gson=new Gson();
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                Traveller value = dataSnapshot.getValue(Traveller.class);
-                try {
-                    placesArrayList = value.getPlaces();
+
+                Object o=dataSnapshot.getValue();
+                String json=gson.toJson(o);
+                Traveller t=gson.fromJson(json,Traveller.class);
+                /*try {
+                    placesArrayList = t.getPlaces();
                     for (Place place : placesArrayList) {
                         //placesListAdapter.addToList(place);
                     }
@@ -154,7 +158,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 catch (Exception e){
 
-                }
+                }*/
 
             }
 

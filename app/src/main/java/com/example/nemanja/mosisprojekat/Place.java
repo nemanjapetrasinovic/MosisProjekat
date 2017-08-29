@@ -10,7 +10,7 @@ public class Place {
     public String name;
     public String description;
     public Double longitude;
-    public Double latitide;
+    public Double latitude;
     public String image;
     public String owner;
     public List<String> friends;
@@ -39,12 +39,12 @@ public class Place {
         this.longitude = longitude;
     }
 
-    public Double getLatitide() {
-        return latitide;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setLatitide(Double latitide) {
-        this.latitide = latitide;
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
     }
 
     public String getImage() {

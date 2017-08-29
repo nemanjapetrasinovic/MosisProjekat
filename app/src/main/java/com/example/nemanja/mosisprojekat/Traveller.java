@@ -13,13 +13,13 @@ class Traveller {
     public float latitude;
     public float longitude;
     public String email;
-    public ArrayList<Place> places;
+    public List<Place> places;
 
-    public ArrayList<Place> getPlaces() {
+    public List<Place> getPlaces() {
         return places;
     }
 
-    public void setPlaces(ArrayList<Place> places) {
+    public void setPlaces(List<Place> places) {
         this.places = places;
     }
 

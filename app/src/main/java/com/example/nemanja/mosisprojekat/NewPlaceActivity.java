@@ -15,8 +15,11 @@ import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -31,6 +34,7 @@ public class NewPlaceActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
+    private long numberOfPlaces;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,13 +89,26 @@ public class NewPlaceActivity extends AppCompatActivity {
 
                     place.setName(nameEdit.getText().toString());
                     place.setLongitude(lon);
-                    place.setLatitide(lat);
+                    place.setLatitude(lat);
                     place.setDescription(descEdit.getText().toString());
                     place.setImage("images/"+photoURI.getLastPathSegment());
                     place.setOwner(mAuth.getCurrentUser().getUid());
 
                     mDatabase= FirebaseDatabase.getInstance().getReference();
-                    mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places").push().setValue(place);
+
+                    DatabaseReference userPlacesRef=mDatabase.child("user").child(mAuth.getCurrentUser().getUid()+"/places");
+                    userPlacesRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            numberOfPlaces=dataSnapshot.getChildrenCount();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places/"+ ++numberOfPlaces).setValue(place);
 
                     setResult(RESULT_OK);
                     finish();
