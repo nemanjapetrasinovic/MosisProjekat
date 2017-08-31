@@ -24,6 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -52,6 +53,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity
@@ -147,8 +150,11 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        placesListAdapter = new PlacesListAdapter(this, this, placesArrayList);
+        placesListAdapter = new PlacesListAdapter(this, this);
         mRecyclerView.setAdapter(placesListAdapter);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
+                layoutManager.getOrientation());
+        mRecyclerView.addItemDecoration(dividerItemDecoration);
 
         DatabaseReference userRef = mDatabase.child("user").child(mAuth.getCurrentUser().getUid());
         final Gson gson=new Gson();
@@ -158,15 +164,40 @@ public class MainActivity extends AppCompatActivity
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
 
+                placesListAdapter.freeList();
                 Object o=dataSnapshot.getValue();
                 String json=gson.toJson(o);
                 Traveller t=gson.fromJson(json,Traveller.class);
 
 
-                for (Place place : t.getPlaces()) {
-                    placesListAdapter.addToList(place);
-                    int i=1;
+                List<Place> places=t.getPlaces();
+                if(places!=null) {
+                    for (Place place : places) {
+                        placesListAdapter.addToList(place);
+                        int i = 1;
+                    }
                 }
+
+                if(t.friends!=null)
+                    for(String url:t.friends){
+                        DatabaseReference friendRef=mDatabase.child("user").child(url);
+                        friendRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Traveller friend=dataSnapshot.getValue(Traveller.class);
+                                if(friend.places!=null){
+                                    for(Place p:friend.places){
+                                        placesListAdapter.addToList(p);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
 
             }
 

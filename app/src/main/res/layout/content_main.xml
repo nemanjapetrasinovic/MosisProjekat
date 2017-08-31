@@ -10,18 +10,18 @@
 
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="368dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_places"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp" />
 
 
     </LinearLayout>

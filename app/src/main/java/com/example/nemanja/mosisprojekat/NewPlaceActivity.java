@@ -85,7 +85,7 @@ public class NewPlaceActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    Place place = new Place();
+                    final Place place = new Place();
 
                     place.setName(nameEdit.getText().toString());
                     place.setLongitude(lon);
@@ -97,10 +97,11 @@ public class NewPlaceActivity extends AppCompatActivity {
                     mDatabase= FirebaseDatabase.getInstance().getReference();
 
                     DatabaseReference userPlacesRef=mDatabase.child("user").child(mAuth.getCurrentUser().getUid()+"/places");
-                    userPlacesRef.addValueEventListener(new ValueEventListener() {
+                    userPlacesRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             numberOfPlaces=dataSnapshot.getChildrenCount();
+                            mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places/"+numberOfPlaces).setValue(place);
                         }
 
                         @Override
@@ -108,7 +109,6 @@ public class NewPlaceActivity extends AppCompatActivity {
 
                         }
                     });
-                    mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places/"+ ++numberOfPlaces).setValue(place);
 
                     setResult(RESULT_OK);
                     finish();

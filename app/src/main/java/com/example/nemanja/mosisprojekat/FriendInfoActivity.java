@@ -107,6 +107,10 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
                 TextView Score=(TextView) findViewById(R.id.textView15);
                 Score.setText(String.valueOf(t.score));
 
+                LatLng sydney = new LatLng(t.getLatitude(), t.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
                 StorageReference storageReference = storageRef.child(key+".jpg");
                 File localFile=null;
                 try {

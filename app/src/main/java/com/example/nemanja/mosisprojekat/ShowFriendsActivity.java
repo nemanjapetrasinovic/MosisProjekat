@@ -44,6 +44,8 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private HashMap<String, String> markersMap;
+    private HashMap<String, Marker> markersOnMap;
+    DownloadThread d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +101,14 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                     // whenever data at this location is updated.
                     Traveller value = dataSnapshot.getValue(Traveller.class);
                     String userID=user.getUid();
+                    if(value.friends!=null)
                     for (final String url:value.friends) {
-                        DatabaseReference userRef=mDatabase.child("user").child(url);
 
+                        d=new DownloadThread(url);
+                        d.start();
+
+
+                        /*DatabaseReference userRef=mDatabase.child("user").child(url);
                         userRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(final DataSnapshot dataSnapshot) {
@@ -174,10 +181,15 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                                 // Failed to read value
                                 Log.w(TAG, "Failed to read value.", error.toException());
                             }
-                        });
+                        });*/
 
                     }
 
+                    try {
+                        d.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -187,15 +199,118 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                 }
             });
         }
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Intent intent = new Intent(ShowFriendsActivity.this,FriendInfoActivity.class);
+                    intent.putExtra("email",marker.getSnippet());
+                    intent.putExtra("key",markersMap.get(marker.getSnippet()));
+                    startActivity(intent);
+                }
+            });
+    }
 
-        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(ShowFriendsActivity.this,FriendInfoActivity.class);
-                intent.putExtra("email",marker.getSnippet());
-                intent.putExtra("key",markersMap.get(marker.getSnippet()));
-                startActivity(intent);
-            }
-        });
+    public class DownloadThread extends Thread{
+        public String url;
+
+        public DownloadThread(String url){
+            this.url=url;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            DatabaseReference userRef=mDatabase.child("user").child(url);
+            userRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+
+                    final Traveller value = dataSnapshot.getValue(Traveller.class);
+                    if(markersOnMap!=null)
+                        if(markersOnMap.get(value.getEmail())!=null){
+                            Marker m=markersOnMap.get(value.getEmail());
+                            m.remove();
+                            markersOnMap.remove(value.getEmail());
+                            if(markersMap!=null)
+                                if(markersMap.get(value.getEmail())!=null)
+                                    markersMap.remove(value.getEmail());
+                        }
+
+                    String userID=url;
+                    StorageReference storageReference = storageRef.child(userID+".jpg");
+                    File localFile=null;
+                    try {
+                        localFile = File.createTempFile(userID, "jpg");
+                    }
+                    catch (Exception e){
+
+                    }
+                    final File localfile2=localFile;
+                    storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            // Local temp file has been created
+                            Bitmap myBitmap = BitmapFactory.decodeFile(localfile2.getAbsolutePath());
+                            int width = myBitmap.getWidth();
+                            int height = myBitmap.getHeight();
+
+                            int maxWidth=150;
+                            int maxHeight=150;
+
+                            Log.v("Pictures", "Width and height are " + width + "--" + height);
+
+                            if (width > height) {
+                                // landscape
+                                float ratio = (float) width / maxWidth;
+                                width = maxWidth;
+                                height = (int)(height / ratio);
+                            } else if (height > width) {
+                                // portrait
+                                float ratio = (float) height / maxHeight;
+                                height = maxHeight;
+                                width = (int)(width / ratio);
+                            } else {
+                                // square
+                                height = maxHeight;
+                                width = maxWidth;
+                            }
+
+                            Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,width,height,false);
+                            LatLng sydney = new LatLng(value.latitude, value.longitude);
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(myScaledBitmap);
+                            MarkerOptions markerOptions = new MarkerOptions().position(sydney)
+                                    .title(value.getFirstname()+ ' '+value.getLastname())
+                                    .snippet(value.getEmail())
+                                    .icon(icon);
+
+                            Marker mMarker = mMap.addMarker(markerOptions);
+                            if(markersMap==null)
+                                markersMap=new HashMap<String, String>();
+                            markersMap.put(value.getEmail(),dataSnapshot.getKey());
+
+                            if(markersOnMap==null)
+                                markersOnMap=new HashMap<String, Marker>();
+                            markersOnMap.put(value.getEmail(),mMarker);
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+
+        }
     }
 }

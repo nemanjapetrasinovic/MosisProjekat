@@ -2,6 +2,8 @@ package com.example.nemanja.mosisprojekat;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
@@ -13,6 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +36,26 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     final private PlacesListAdapterOnClickHandler mClickHandler;
     private Geocoder geocoder;
 
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+
     public interface PlacesListAdapterOnClickHandler {
         void onClick(long date);
     }
 
     //private Cursor mCursor;
     private ArrayList<Place> lista;
-    public PlacesListAdapter(@NonNull Context context, PlacesListAdapterOnClickHandler clickHandler, ArrayList<Place> l) {
+    public PlacesListAdapter(@NonNull Context context, PlacesListAdapterOnClickHandler clickHandler) {
         mContext = context;
         mClickHandler = clickHandler;
-        lista = l;
+        lista = new ArrayList<Place>();
         geocoder = new Geocoder(mContext, Locale.getDefault());
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+    }
+
+    public void freeList(){
+        lista.clear();
     }
 
     public PlacesListAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -60,6 +78,15 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
          * Profile Icon *
          ****************/
         int profileImageId = 0;
+        //Bitmap picture;
+        //DownloadPictureThread t=new DownloadPictureThread(place.getImage());
+        //t.start();
+        //picture=t.getPicture();
+        /**try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         placesListAdapterViewHolder.iconView.setImageResource(R.drawable.art_clouds);
 
         /****************
@@ -135,6 +162,73 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
             //long dateInMillis = mCursor.getLong(0);//hard fix
             //mClickHandler.onClick(dateInMillis);
             Toast.makeText(mContext,"sss", Toast.LENGTH_SHORT);
+        }
+    }
+
+    public class DownloadPictureThread extends Thread{
+        public String url;
+        public Bitmap picture;
+
+        public DownloadPictureThread(String image) {
+            this.url=url;
+        }
+
+        public Bitmap getPicture(){
+            return picture;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+
+            StorageReference placePictureRef=storageRef.child(url);
+            File localFile=null;
+            try {
+                localFile = File.createTempFile(url, "jpg");
+            }
+            catch (Exception e){
+
+            }
+            final File localfile2=localFile;
+            placePictureRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    // Local temp file has been created
+                    Bitmap myBitmap = BitmapFactory.decodeFile(localfile2.getAbsolutePath());
+                    int width = myBitmap.getWidth();
+                    int height = myBitmap.getHeight();
+
+                    int maxWidth=150;
+                    int maxHeight=150;
+
+
+                    if (width > height) {
+                        // landscape
+                        float ratio = (float) width / maxWidth;
+                        width = maxWidth;
+                        height = (int)(height / ratio);
+                    } else if (height > width) {
+                        // portrait
+                        float ratio = (float) height / maxHeight;
+                        height = maxHeight;
+                        width = (int)(width / ratio);
+                    } else {
+                        // square
+                        height = maxHeight;
+                        width = maxWidth;
+                    }
+
+                    Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,width,height,false);
+                    picture=myScaledBitmap;
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+
         }
     }
 
