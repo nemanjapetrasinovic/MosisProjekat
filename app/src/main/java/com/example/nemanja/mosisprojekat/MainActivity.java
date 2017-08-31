@@ -172,9 +172,11 @@ public class MainActivity extends AppCompatActivity
 
                 List<Place> places=t.getPlaces();
                 if(places!=null) {
+                    DownloadPicture download=null;
                     for (Place place : places) {
-                        placesListAdapter.addToList(place);
-                        int i = 1;
+                        download = new DownloadPicture(place, placesListAdapter);
+                        download.start();
+
                     }
                 }
 
@@ -186,8 +188,10 @@ public class MainActivity extends AppCompatActivity
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Traveller friend=dataSnapshot.getValue(Traveller.class);
                                 if(friend.places!=null){
+                                    DownloadPicture download=null;
                                     for(Place p:friend.places){
-                                        placesListAdapter.addToList(p);
+                                        download = new DownloadPicture(p, placesListAdapter);
+                                        download.start();
                                     }
                                 }
                             }
@@ -527,5 +531,82 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(i, ACTIVITY_NEW_PLACE);
 
     }
+
+        public class DownloadPicture extends Thread{
+            public Place place;
+            public Bitmap picture;
+            public PlacesListAdapter p;
+            public Object lock;
+
+            public DownloadPicture(Place place, PlacesListAdapter p) {
+                this.place=place;
+                this.p=p;
+            }
+
+            public Bitmap getPicture(){
+                return picture;
+            }
+
+            @Override
+            public void run() {
+                super.run();
+
+                if(storage==null)
+                    storage=FirebaseStorage.getInstance();
+                if(storageRef==null)
+                    storageRef = storage.getReference();
+                StorageReference placePictureRef=storageRef.child(place.getImage());
+                File localFile=null;
+                try {
+                    String s[]=place.getImage().split("\\.");
+                    String s1[]=s[0].split("/");
+                    localFile = File.createTempFile(s1[1], "jpg");
+                }
+                catch (Exception e){
+
+                }
+                final File localfile2=localFile;
+                placePictureRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Local temp file has been created
+                        Bitmap myBitmap = BitmapFactory.decodeFile(localfile2.getAbsolutePath());
+                        int width = myBitmap.getWidth();
+                        int height = myBitmap.getHeight();
+
+                        int maxWidth=150;
+                        int maxHeight=150;
+
+
+                        if (width > height) {
+                            // landscape
+                            float ratio = (float) width / maxWidth;
+                            width = maxWidth;
+                            height = (int)(height / ratio);
+                        } else if (height > width) {
+                            // portrait
+                            float ratio = (float) height / maxHeight;
+                            height = maxHeight;
+                            width = (int)(width / ratio);
+                        } else {
+                            // square
+                            height = maxHeight;
+                            width = maxWidth;
+                        }
+
+                        Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,width,height,false);
+                        picture=myScaledBitmap;
+                        p.addToHashMap(place.getName(),picture);
+                        p.addToList(place);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+            }
+        }
 
 }

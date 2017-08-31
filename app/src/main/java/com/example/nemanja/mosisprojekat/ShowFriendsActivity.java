@@ -100,12 +100,12 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                     // This method is called once with the initial value and again
                     // whenever data at this location is updated.
                     Traveller value = dataSnapshot.getValue(Traveller.class);
-                    String userID=user.getUid();
-                    if(value.friends!=null)
-                    for (final String url:value.friends) {
+                    String userID = user.getUid();
+                    if (value.friends != null) {
+                        for (final String url : value.friends) {
 
-                        d=new DownloadThread(url);
-                        d.start();
+                            d = new DownloadThread(url);
+                            d.start();
 
 
                         /*DatabaseReference userRef=mDatabase.child("user").child(url);
@@ -183,12 +183,13 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                             }
                         });*/
 
-                    }
+                        }
 
-                    try {
-                        d.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        try {
+                            d.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 

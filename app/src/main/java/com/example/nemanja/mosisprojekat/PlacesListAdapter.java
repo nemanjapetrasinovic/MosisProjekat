@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,9 +37,10 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     private final Context mContext;
     final private PlacesListAdapterOnClickHandler mClickHandler;
     private Geocoder geocoder;
-
+    private final Object lock = new Object();
     private FirebaseStorage storage;
     private StorageReference storageRef;
+    private HashMap<String,Bitmap> pictures;
 
     public interface PlacesListAdapterOnClickHandler {
         void onClick(long date);
@@ -50,12 +53,17 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
         mClickHandler = clickHandler;
         lista = new ArrayList<Place>();
         geocoder = new Geocoder(mContext, Locale.getDefault());
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+        pictures=new HashMap<String,Bitmap>();
     }
 
     public void freeList(){
         lista.clear();
+    }
+
+    public void addToHashMap(String placeName,Bitmap placePicture){
+        if(pictures==null)
+            pictures=new HashMap<String, Bitmap>();
+        pictures.put(placeName,placePicture);
     }
 
     public PlacesListAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -78,17 +86,15 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
          * Profile Icon *
          ****************/
         int profileImageId = 0;
-        //Bitmap picture;
-        //DownloadPictureThread t=new DownloadPictureThread(place.getImage());
-        //t.start();
-        //picture=t.getPicture();
-        /**try {
+        //DownloadPictureThread t=new DownloadPictureThread(place.getImage(),placesListAdapterViewHolder);
+
+        /*try {
             t.join();
+            t.start();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
-        placesListAdapterViewHolder.iconView.setImageResource(R.drawable.art_clouds);
-
+        placesListAdapterViewHolder.iconView.setImageBitmap(pictures.get(place.getName()));
         /****************
          * Name *
          ****************/
@@ -103,7 +109,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
         List<Address> addressList = null;
         try {
-            addressList = geocoder.getFromLocation(44, 45, 1);
+            addressList = geocoder.getFromLocation(place.getLatitude(), place.getLongitude(), 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -168,9 +174,12 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     public class DownloadPictureThread extends Thread{
         public String url;
         public Bitmap picture;
+        public PlacesListAdapterViewHolder p;
+        public Object lock;
 
-        public DownloadPictureThread(String image) {
-            this.url=url;
+        public DownloadPictureThread(String image, PlacesListAdapterViewHolder p) {
+            this.url=image;
+            this.p=p;
         }
 
         public Bitmap getPicture(){
@@ -181,10 +190,16 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
         public void run() {
             super.run();
 
+            if(storage==null)
+                storage=FirebaseStorage.getInstance();
+            if(storageRef==null)
+                storageRef = storage.getReference();
             StorageReference placePictureRef=storageRef.child(url);
             File localFile=null;
             try {
-                localFile = File.createTempFile(url, "jpg");
+                String s[]=url.split("\\.");
+                String s1[]=s[0].split("/");
+                localFile = File.createTempFile(s1[1], "jpg");
             }
             catch (Exception e){
 
@@ -220,7 +235,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
                     Bitmap myScaledBitmap=Bitmap.createScaledBitmap(myBitmap,width,height,false);
                     picture=myScaledBitmap;
-
+                    p.iconView.setImageBitmap(picture);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
