@@ -40,6 +40,38 @@ android:orientation="vertical">
             />
 
 
+
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+                <RadioButton
+                    android:id="@+id/radioCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="City"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioMount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mountain"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioRiver"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="River"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioSea"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sea"
+                    android:onClick="onRadioButtonClicked"/>
+        </RadioGroup>
+
         <ImageView
             android:id="@+id/place_image"
             android:layout_width="match_parent"

@@ -1,14 +1,10 @@
 package com.example.nemanja.mosisprojekat;
 
-import android.*;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,12 +19,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -96,15 +90,13 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Traveller t=dataSnapshot.getValue(Traveller.class);
-                TextView Name=(TextView) findViewById(R.id.textView4);
-                Name.setText(t.firstname);
-                TextView LastName=(TextView) findViewById(R.id.textView9);
-                LastName.setText(t.lastname);
-                TextView Email=(TextView) findViewById(R.id.textView11);
+                TextView Name=(TextView) findViewById(R.id.profile_info_name);
+                Name.setText(t.firstname + " "+ t.lastname);
+                TextView Email=(TextView) findViewById(R.id.profile_info_email);
                 Email.setText(t.email);
-                TextView PhoneNumber=(TextView) findViewById(R.id.textView13);
+                TextView PhoneNumber=(TextView) findViewById(R.id.profile_info_number);
                 PhoneNumber.setText(t.phonenumber);
-                TextView Score=(TextView) findViewById(R.id.textView15);
+                TextView Score=(TextView) findViewById(R.id.profile_info_score);
                 Score.setText(String.valueOf(t.score));
 
                 LatLng sydney = new LatLng(t.getLatitude(), t.getLongitude());
@@ -126,7 +118,7 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                         // Local temp file has been created
                         Bitmap myBitmap = BitmapFactory.decodeFile(localfile2.getAbsolutePath());
-                        ImageView image=(ImageView) findViewById(R.id.imageView3);
+                        ImageView image=(ImageView) findViewById(R.id.profile_info_icon);
                         image.setImageBitmap(myBitmap);
                     }
                 }).addOnFailureListener(new OnFailureListener() {

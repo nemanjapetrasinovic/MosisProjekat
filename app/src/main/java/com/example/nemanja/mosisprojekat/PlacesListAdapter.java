@@ -11,8 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,25 +34,72 @@ import java.util.Locale;
  * Created by Nikola on 2017-08-20.
  */
 
-class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesListAdapterViewHolder>{
+class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesListAdapterViewHolder> implements Filterable{
     private final Context mContext;
     final private PlacesListAdapterOnClickHandler mClickHandler;
     private Geocoder geocoder;
+    private ItemFilter mFilter = new ItemFilter();
+
+    private ArrayList<Place> lista;
+    private ArrayList<Place> originalnaLista = null;
+
     private final Object lock = new Object();
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private HashMap<String,Bitmap> pictures;
 
     public interface PlacesListAdapterOnClickHandler {
-        void onClick(long date);
+        void onClick(String placeKey);
     }
 
+    private class ItemFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            String filterString = constraint.toString().toLowerCase();
+
+            FilterResults results = new FilterResults();
+
+            final List<Place> list = originalnaLista;
+
+            int count = list.size();
+            final ArrayList<Place> nlist = new ArrayList<Place>(count);
+
+            String filterableString ;
+            Place filterablePlace;
+            for (int i = 0; i < count; i++) {
+                filterablePlace = list.get(i);
+                filterableString = filterablePlace.getName();
+                if (filterableString.toLowerCase().contains(filterString)) {
+                    nlist.add(filterablePlace);
+                }
+            }
+
+            results.values = nlist;
+            results.count = nlist.size();
+
+            return results;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            lista = (ArrayList<Place>) results.values;
+            notifyDataSetChanged();
+        }
+
+    }
+    @Override
+    public Filter getFilter() {
+        return mFilter;
+    }
     //private Cursor mCursor;
-    private ArrayList<Place> lista;
+
     public PlacesListAdapter(@NonNull Context context, PlacesListAdapterOnClickHandler clickHandler) {
         mContext = context;
         mClickHandler = clickHandler;
         lista = new ArrayList<Place>();
+        originalnaLista = new ArrayList<Place>();
         geocoder = new Geocoder(mContext, Locale.getDefault());
         pictures=new HashMap<String,Bitmap>();
     }
@@ -135,6 +183,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
     void addToList(Place t){
         lista.add(t);
+        originalnaLista.add(t);
         notifyDataSetChanged();
     }
 
@@ -167,8 +216,12 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
             //long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
             //long dateInMillis = mCursor.getLong(0);//hard fix
             //mClickHandler.onClick(dateInMillis);
-            Toast.makeText(mContext,"sss", Toast.LENGTH_SHORT);
+            String a = lista.get(adapterPosition).getOwner();
+            Toast.makeText(mContext,"Iz adaptera " + a, Toast.LENGTH_SHORT).show();
+            mClickHandler.onClick(a);
         }
+
+
     }
 
     public class DownloadPictureThread extends Thread{

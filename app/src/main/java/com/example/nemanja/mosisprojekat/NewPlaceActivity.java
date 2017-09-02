@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,11 +36,13 @@ public class NewPlaceActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
     private long numberOfPlaces;
+    private String radioType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_place);
 
+        radioType = "City";
         mAuth=FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -93,6 +96,8 @@ public class NewPlaceActivity extends AppCompatActivity {
                     place.setDescription(descEdit.getText().toString());
                     place.setImage("images/"+photoURI.getLastPathSegment());
                     place.setOwner(mAuth.getCurrentUser().getUid());
+                    //place.setDate(new Date());
+                    //place.setType(radioType);
 
                     mDatabase= FirebaseDatabase.getInstance().getReference();
 
@@ -126,6 +131,31 @@ public class NewPlaceActivity extends AppCompatActivity {
         }
         catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radioCity:
+                if (checked)
+                    radioType = "City";
+                    break;
+            case R.id.radioMount:
+                if (checked)
+                    radioType = "Mountain";
+                    break;
+            case R.id.radioRiver:
+                if (checked)
+                    radioType = "River";
+                    break;
+            case R.id.radioSea:
+                if (checked)
+                    radioType = "Sea";
+                    break;
         }
     }
 }

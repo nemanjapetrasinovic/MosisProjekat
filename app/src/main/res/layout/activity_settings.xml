@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical" android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/sss"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Radius"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"/>
+
+            <SeekBar
+                android:id="@+id/seekBar2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:max="20000" />
+
+            <TextView
+                android:id="@+id/sssss"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Type"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"/>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radioCitySearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="City"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioMountSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mountain"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioRiverSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="River"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/radioSeaSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sea"
+                    android:onClick="onRadioButtonClicked"/>
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/ssssss"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:textSize="20sp"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"/>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/horizontal_middle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"
+                    tools:layout_editor_absoluteX="192dp"
+                    tools:layout_editor_absoluteY="0dp"/>
+
+
+                <TextView
+                    android:id="@+id/from"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:text="From:"
+                    android:textSize="20sp"
+
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginBottom="5sp"
+                    />
+
+                <DatePicker
+                    android:id="@+id/datePicker2"
+                    android:layout_width="197sp"
+                    android:layout_height="250sp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/horizontal_middle"
+                    app:layout_constraintTop_toBottomOf="@id/from"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/to"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0dp"
+                    android:text="To:"
+                    android:textSize="20sp"
+
+                    app:layout_constraintLeft_toLeftOf="@id/horizontal_middle"
+                    android:layout_marginTop="5sp"
+                    android:layout_marginBottom="5sp"
+                    />
+
+                <DatePicker
+                    android:id="@+id/datePicker"
+                    android:layout_width="197sp"
+                    android:layout_height="250sp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/horizontal_middle"
+                    app:layout_constraintTop_toBottomOf="@id/to"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    android:layout_marginBottom="8dp" />
+
+
+            </android.support.constraint.ConstraintLayout>
+
+            <Button
+                android:id="@+id/advanced_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                />
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

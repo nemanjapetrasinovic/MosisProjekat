@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -33,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,13 +51,12 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     private static final int REQUEST_STORAGE_PERMISSION = 1;
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
     private static final int ACTIVITY_NEW_PLACE = 8;
+    private static final int ACTIVITY_SETTINGS = 4;
     private String mTempPhotoPath;
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -233,7 +235,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem item = menu.findItem(R.id.search_menu);
+        SearchView searchView = (SearchView)item.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                placesListAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -246,7 +265,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivityForResult(i, ACTIVITY_SETTINGS);
         }
 
         return super.onOptionsItemSelected(item);
@@ -390,8 +410,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(long date) {
-
+    public void onClick(String placeKey) {
+        Toast.makeText(this,"Iz maina " + placeKey, Toast.LENGTH_SHORT).show();
     }
 
     private class MyMainLocalReceiver extends BroadcastReceiver {

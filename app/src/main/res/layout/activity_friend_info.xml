@@ -7,6 +7,7 @@
     tools:context="com.example.nemanja.mosisprojekat.FriendInfoActivity"
     android:orientation="vertical">
 
+    <!--
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -159,7 +160,10 @@
 
         </LinearLayout>
     </ScrollView>
+    -->
+    <include layout="@layout/profile_info">
 
+    </include>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
