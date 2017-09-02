@@ -213,12 +213,12 @@ public class MainActivity extends AppCompatActivity
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
-        /*try {
+        try {
             GetUserData();
         }
         catch (Exception e){
             System.out.print(e.toString());
-        }*/
+        }
 
     }
 
