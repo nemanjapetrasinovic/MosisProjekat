@@ -56,6 +56,7 @@
 
         <!-- Icon indicating weather condition -->
         <ImageView
+            android:id="@+id/profile_info_icon"
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:adjustViewBounds="true"
@@ -69,12 +70,16 @@
 
         <!-- Text that describes weather condition -->
         <TextView
+            android:id="@+id/profile_info_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
 
             android:textSize="20sp"
             app:layout_constraintHorizontal_bias="0.52"
+            app:layout_constraintLeft_toLeftOf="@+id/profile_info_icon"
+            app:layout_constraintRight_toRightOf="@+id/profile_info_icon"
+            app:layout_constraintTop_toBottomOf="@+id/profile_info_icon"
             tools:text="Nikola Rankovic"/>
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -87,11 +92,13 @@
          - this attribute will be - ignored on devices that run an Android version less than 16. -
          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <TextView
+            android:id="@+id/profile_info_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
 
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_info_icon"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
             app:layout_constraintRight_toRightOf="parent"
@@ -100,14 +107,17 @@
             app:layout_constraintVertical_bias="0.213" />
 
         <TextView
+            android:id="@+id/profile_info_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
 
             android:textSize="22sp"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_info_icon"
             app:layout_constraintHorizontal_bias="0.45"
             app:layout_constraintLeft_toLeftOf="@+id/horizontal_middle"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profile_info_email"
 
             tools:text="score: 2000"/>
 
@@ -121,10 +131,14 @@
          - this attribute will be - ignored on devices that run an Android version less than 16. -
          - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <TextView
+            android:id="@+id/profile_info_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             android:textSize="22sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/profile_info_name"
+            app:layout_constraintLeft_toLeftOf="@+id/profile_info_email"
+            app:layout_constraintRight_toRightOf="@+id/profile_info_email"
             tools:text="phone: 0699999999"/>
 
     </android.support.constraint.ConstraintLayout>
