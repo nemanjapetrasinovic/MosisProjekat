@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -326,7 +327,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(ShowFriendsOnMap);
         } else if (id == R.id.nav_slideshow) {
 
-            final NotificationCompat.Builder mBuilder =
+            /*final NotificationCompat.Builder mBuilder =
                     (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                             .setSmallIcon(R.drawable.ic_menu_camera)
                             .setContentTitle("My notification")
@@ -338,7 +339,9 @@ public class MainActivity extends AppCompatActivity
             mBuilder.setVibrate(new long[] {125,75,125,275,200,275,125,75,125,275,200,600,200,600});
 
             mNotifyMgr.notify(mNotificationId, mBuilder.build());
-            mNotificationId++;
+            mNotificationId++;*/
+            Intent profile=new Intent(MainActivity.this.getApplicationContext(), ProfileActivity.class);
+            startActivity(profile);
 
         } else if (id == R.id.nav_manage) {
 
@@ -349,6 +352,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(bluetooth);
         } else if (id == R.id.nav_send) {
 
+            Intent rang=new Intent(MainActivity.this,RangListActivity.class);
+            startActivity(rang);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

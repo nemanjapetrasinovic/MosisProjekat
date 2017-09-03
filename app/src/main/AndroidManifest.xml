@@ -82,7 +82,9 @@
 
         <activity android:name=".FriendsSearchActivity" />
         <activity android:name=".NewPlaceActivity" />
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".RangListActivity" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>

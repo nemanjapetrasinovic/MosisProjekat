@@ -43,6 +43,8 @@ import java.util.Set;
 
 public class FriendsSearchActivity extends AppCompatActivity implements BluetoothFriendsAdapter.BluetoothFriendsAdapterOnClickHandler {
 
+    Long numberOfUsers;
+    String[] niz;
     private boolean request_sent = false;
     /**
      * Tag for Log
@@ -339,10 +341,26 @@ public class FriendsSearchActivity extends AppCompatActivity implements Bluetoot
                         // construct a string from the valid bytes in the buffer
                         String readMessage = new String(readBuf, 0, msg.arg1);
 
-                        String[] niz = readMessage.split(" ");
+                        niz = readMessage.split(" ");
                         if(niz[0].compareTo("uzvratna") != 0) {
                             //Toast.makeText(FriendsSearchActivity.this, "Received "
                             //        + readMessage, Toast.LENGTH_SHORT).show();
+                            mDatabase= FirebaseDatabase.getInstance().getReference();
+
+                            DatabaseReference userPlacesRef=mDatabase.child("user");
+                            userPlacesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    numberOfUsers=dataSnapshot.getChildrenCount();
+                                    mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("friends/"+numberOfUsers).setValue(niz[0]);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
                             mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("friends").push().setValue(niz[0]);
 
                             String message = mAuth.getCurrentUser().getUid();
