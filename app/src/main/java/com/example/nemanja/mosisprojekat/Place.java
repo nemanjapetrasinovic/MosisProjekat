@@ -14,6 +14,24 @@ public class Place {
     public String image;
     public String owner;
     public List<String> friends;
+    /*public Date date;
+    public String type;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }*/
 
     public String getName() {
         return name;

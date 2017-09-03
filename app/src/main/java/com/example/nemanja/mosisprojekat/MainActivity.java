@@ -9,10 +9,11 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -58,10 +59,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.location.LocationManager.GPS_PROVIDER;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         PlacesListAdapter.PlacesListAdapterOnClickHandler
         {
+            protected LocationManager mLocationManager;
+            protected Context context;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 1;
@@ -80,6 +85,9 @@ public class MainActivity extends AppCompatActivity
     private double longitude;
     private double latitude;
 
+    private String radio = "all";
+    private int radius = 20000;
+
     Intent intentMyService;
     ComponentName service;
     BroadcastReceiver receiver;
@@ -95,6 +103,33 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        try {
+            Intent listIntent = getIntent();
+            Bundle bundle = listIntent.getExtras();
+            int r  = bundle.getInt("radius");
+            String type = bundle.getString("type");
+            radius = r;
+            radio = type;
+        }
+        catch(Exception e){
+
+        }
+
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+
+        try {
+            MainActivity.LocationListener GPSListener = new MainActivity.LocationListener(GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    GPS_PROVIDER, 0, 0,
+                    GPSListener);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
 
         //Location Service start
         intentMyService = new Intent(this, LocationService.class);
@@ -153,6 +188,9 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setHasFixedSize(true);
 
         placesListAdapter = new PlacesListAdapter(this, this);
+        placesListAdapter.setType(radio);
+        placesListAdapter.setRadius(radius);
+
         mRecyclerView.setAdapter(placesListAdapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
                 layoutManager.getOrientation());
@@ -248,6 +286,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                placesListAdapter.freeList();
                 placesListAdapter.getFilter().filter(newText);
                 return false;
             }
@@ -417,8 +456,10 @@ public class MainActivity extends AppCompatActivity
     private class MyMainLocalReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            latitude = intent.getDoubleExtra("latitude", -1);
+            /*latitude = intent.getDoubleExtra("latitude", -1);
             longitude = intent.getDoubleExtra("longitude", -1);
+            placesListAdapter.setMyLatitude(latitude);
+            placesListAdapter.setMyLongitude(longitude);*/
             /*EditText lon = (EditText) findViewById(R.id.lon);
             EditText lat = (EditText) findViewById(R.id.lat);
             lon.setText(String.valueOf(longitude));
@@ -629,4 +670,47 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+
+            class LocationListener implements android.location.LocationListener
+            {
+                Location mLastLocation;
+                Location currLocation;
+
+                public LocationListener(String provider)
+                {
+                    Log.e(TAG, "LocationListener " + provider);
+                    mLastLocation = new Location(provider);
+                }
+
+
+                @Override
+                public void onLocationChanged(Location location)
+                {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    placesListAdapter.setMyLatitude(latitude);
+                    placesListAdapter.setMyLongitude(longitude);
+                    currLocation = location;
+                    Log.e(TAG, "onLocationChanged: " + location);
+                    mLastLocation.set(location);
+                }
+
+                @Override
+                public void onProviderDisabled(String provider)
+                {
+                    Log.e(TAG, "onProviderDisabled: " + provider);
+                }
+
+                @Override
+                public void onProviderEnabled(String provider)
+                {
+                    Log.e(TAG, "onProviderEnabled: " + provider);
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras)
+                {
+                    Log.e(TAG, "onStatusChanged: " + provider);
+                }
+            }
 }

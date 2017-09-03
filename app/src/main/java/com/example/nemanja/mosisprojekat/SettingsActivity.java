@@ -1,27 +1,60 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
 
-/**
- * SettingsActivity is responsible for displaying the {@link SettingsFragment}. It is also
- * responsible for orchestrating proper navigation when the up button is clicked. When the up
- * button is clicked from the SettingsActivity, we want to navigate to the Activity that the user
- * came from to get to the SettingsActivity.
- * <p>
- * For example, when the user is in the DetailActivity and clicks the settings option in the menu,
- * and then clicks the up button, we want to navigate back to the DetailActivity. If the user
- * navigates to the SettingsActivity from the MainActivity, then we want to navigate back to the
- * MainActivity when the user clicks the up button from the SettingsActivity.
- */
 public class SettingsActivity extends AppCompatActivity {
+
+    private String radioType;
+    private int radius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        radioType = "City";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar2);
+        final EditText radiusEdit = (EditText) findViewById(R.id.radiusEdit);
+        Button button = (Button) findViewById(R.id.advanced_search);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                radius = progress;
+                radiusEdit.setText(progress + " km");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("radius", radius);
+                bundle.putString("type", radioType);
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -45,4 +78,30 @@ public class SettingsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radioCitySearch:
+                if (checked)
+                    radioType = "City";
+                break;
+            case R.id.radioMountSearch:
+                if (checked)
+                    radioType = "Mountain";
+                break;
+            case R.id.radioRiverSearch:
+                if (checked)
+                    radioType = "River";
+                break;
+            case R.id.radioSeaSearch:
+                if (checked)
+                    radioType = "Sea";
+                break;
+        }
+    }
 }
+

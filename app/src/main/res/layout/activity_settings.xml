@@ -15,21 +15,67 @@
             android:layout_height="match_parent"
             android:weightSum="1">
 
-            <TextView
-                android:id="@+id/sss"
-                android:layout_width="fill_parent"
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="Radius"
                 android:layout_marginTop="10sp"
-                android:layout_marginBottom="10sp"/>
+                android:layout_marginBottom="10sp">
+
+                <TextView
+                    android:id="@+id/sss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="Radius"
+                    app:layout_constraintHorizontal_bias="0.047"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    tools:layout_editor_absoluteY="9dp" />
+
+                <EditText
+                    android:id="@+id/radiusEdit"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:text="0 km"
+                    tools:layout_editor_absoluteY="0dp"
+                    android:layout_marginLeft="291dp" />
+
+            </android.support.constraint.ConstraintLayout>
+
 
             <SeekBar
                 android:id="@+id/seekBar2"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:max="20000" />
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                android:id="@+id/mmm"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="0 km"
+                android:layout_marginTop="10sp"
+                android:layout_marginBottom="10sp"
+                android:layout_marginLeft="10sp"/>
 
+                <TextView
+                    android:id="@+id/mmmm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:text="20000 km"
+                    app:layout_constraintHorizontal_bias="1"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="10sp"
+                    android:layout_marginLeft="10sp"/>
+
+            </android.support.constraint.ConstraintLayout>
             <TextView
                 android:id="@+id/sssss"
                 android:layout_width="fill_parent"
@@ -150,6 +196,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Search"
+                android:layout_marginTop="5sp"
+                android:layout_marginBottom="5sp"
                 />
         </LinearLayout>
 

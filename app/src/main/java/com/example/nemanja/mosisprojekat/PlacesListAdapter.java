@@ -42,6 +42,46 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
     private ArrayList<Place> lista;
     private ArrayList<Place> originalnaLista = null;
+    private String type = "all";
+    private int radius = 20000;
+    private double myLongitude;
+    private double myLatitude;
+
+    public Context getmContext() {
+        return mContext;
+    }
+
+    public double getMyLongitude() {
+        return myLongitude;
+    }
+
+    public void setMyLongitude(double myLongitude) {
+        this.myLongitude = myLongitude;
+    }
+
+    public double getMyLatitude() {
+        return myLatitude;
+    }
+
+    public void setMyLatitude(double myLatitude) {
+        this.myLatitude = myLatitude;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
 
     private final Object lock = new Object();
     private FirebaseStorage storage;
@@ -182,9 +222,33 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     }
 
     void addToList(Place t){
-        lista.add(t);
-        originalnaLista.add(t);
-        notifyDataSetChanged();
+        double distance = CalculationByDistance(t.getLatitude(), t.getLongitude(), myLatitude, myLongitude);
+        if(distance < radius) {
+            lista.add(t);
+            originalnaLista.add(t);
+            notifyDataSetChanged();
+        }
+    }
+
+    private double CalculationByDistance(double lat1, double lon1, double lat2, double lon2) {
+        int Radius = 6371;// radius of earth in Km
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        /*DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
+                + " Meter   " + meterInDec);
+        */
+        return Radius * c;
     }
 
     class PlacesListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

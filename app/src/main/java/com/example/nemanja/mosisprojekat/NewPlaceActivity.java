@@ -1,7 +1,10 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,7 +29,12 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
+import static android.location.LocationManager.GPS_PROVIDER;
+
 public class NewPlaceActivity extends AppCompatActivity {
+
+    protected LocationManager mLocationManager;
+    protected Context context;
 
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
     private static final String TAG = NewPlaceActivity.class.getSimpleName();
@@ -35,12 +43,73 @@ public class NewPlaceActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
+
     private long numberOfPlaces;
     private String radioType;
+
+    private double lon;
+    private double lat;
+
+    class LocationListener implements android.location.LocationListener
+    {
+        Location mLastLocation;
+        Location currLocation;
+
+        public LocationListener(String provider)
+        {
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
+        }
+
+
+        @Override
+        public void onLocationChanged(Location location)
+        {
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            currLocation = location;
+            Log.e(TAG, "onLocationChanged: " + location);
+            mLastLocation.set(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider)
+        {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider)
+        {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras)
+        {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_place);
+
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
+
+        try {
+            NewPlaceActivity.LocationListener GPSListener = new NewPlaceActivity.LocationListener(GPS_PROVIDER);
+            mLocationManager.requestLocationUpdates(
+                    GPS_PROVIDER, 0, 0,
+                    GPSListener);
+        } catch (java.lang.SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
+
 
         radioType = "City";
         mAuth=FirebaseAuth.getInstance();
@@ -67,8 +136,6 @@ public class NewPlaceActivity extends AppCompatActivity {
             Intent listIntent = getIntent();
             Bundle bundle = listIntent.getExtras();
             String path = bundle.getString("path");
-            final Double lon = bundle.getDouble("longitude");
-            final Double lat = bundle.getDouble("latitude");
 
             ImageView imageView = (ImageView) findViewById(R.id.place_image);
             File file = new File(path);
@@ -158,4 +225,5 @@ public class NewPlaceActivity extends AppCompatActivity {
                     break;
         }
     }
+
 }
