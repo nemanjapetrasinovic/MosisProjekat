@@ -211,12 +211,24 @@ public class MainActivity extends AppCompatActivity
                 Traveller t=gson.fromJson(json,Traveller.class);
 
 
-                List<Place> places=t.getPlaces();
+                List<String> places=t.getPlaces();
                 if(places!=null) {
-                    DownloadPicture download=null;
-                    for (Place place : places) {
-                        download = new DownloadPicture(place, placesListAdapter);
-                        download.start();
+                    for (String place : places) {
+                        DatabaseReference placeRef=mDatabase.child("place/"+place);
+                        placeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                DownloadPicture download=null;
+                                Place p=dataSnapshot.getValue(Place.class);
+                                download = new DownloadPicture(p, placesListAdapter);
+                                download.start();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
 
                     }
                 }
@@ -229,10 +241,23 @@ public class MainActivity extends AppCompatActivity
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Traveller friend=dataSnapshot.getValue(Traveller.class);
                                 if(friend.places!=null){
-                                    DownloadPicture download=null;
-                                    for(Place p:friend.places){
-                                        download = new DownloadPicture(p, placesListAdapter);
-                                        download.start();
+                                    for (String place : friend.places) {
+                                        DatabaseReference placeRef=mDatabase.child("place/"+place);
+                                        placeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                DownloadPicture download=null;
+                                                Place p=dataSnapshot.getValue(Place.class);
+                                                download = new DownloadPicture(p, placesListAdapter);
+                                                download.start();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
                                     }
                                 }
                             }

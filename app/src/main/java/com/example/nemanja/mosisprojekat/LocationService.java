@@ -97,7 +97,7 @@ public class LocationService extends Service {
                       String json = gson.toJson(o);
                       final Traveller t = gson.fromJson(json, Traveller.class);
 
-                      if(t.friends!=null) {
+                      /*if(t.friends!=null) {
                           for (String url : t.friends) {
                               DatabaseReference friendRef = mDatabase.child("user").child(url);
                               friendRef.addValueEventListener(new ValueEventListener() {
@@ -122,7 +122,7 @@ public class LocationService extends Service {
                                   }
                               });
                           }
-                      }
+                      }*/
                   }
             });
 

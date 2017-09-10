@@ -28,6 +28,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 
@@ -43,6 +49,7 @@ public class NewPlaceActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
+    private Traveller t;
 
     private long numberOfPlaces;
     private String radioType;
@@ -168,12 +175,22 @@ public class NewPlaceActivity extends AppCompatActivity {
 
                     mDatabase= FirebaseDatabase.getInstance().getReference();
 
-                    DatabaseReference userPlacesRef=mDatabase.child("user").child(mAuth.getCurrentUser().getUid()+"/places");
-                    userPlacesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    Date currentTimeDate= Calendar.getInstance().getTime();
+
+                    final String key=String.valueOf(currentTimeDate.getTime()+currentTimeDate.getDate());
+
+                    DatabaseReference userPlacesRef=mDatabase.child("place/"+key);
+                    userPlacesRef.setValue(place);
+                    final String placeID=userPlacesRef.getKey();
+
+                    DatabaseReference userPlaceRef=mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/places");
+                    userPlaceRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             numberOfPlaces=dataSnapshot.getChildrenCount();
-                            mDatabase.child("user").child(mAuth.getCurrentUser().getUid()).child("places/"+numberOfPlaces).setValue(place);
+                            DatabaseReference r= mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/places/"+numberOfPlaces);
+                            r.setValue(key);
+                            long s=12345;
                         }
 
                         @Override
