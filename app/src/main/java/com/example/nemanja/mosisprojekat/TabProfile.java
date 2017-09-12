@@ -4,9 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,20 +30,23 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
-public class ProfileActivity extends AppCompatActivity {
+/**
+ * Created by Nemanja on 9/12/2017.
+ */
 
+public class TabProfile extends Fragment{
     private static final String TAG = MainActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profil);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View rootView=inflater.inflate(R.layout.tab_profile,container,false);
 
-        mAuth=FirebaseAuth.getInstance();
+        mAuth= FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -64,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
         catch (Exception e){
 
         }
+        return rootView;
     }
 
     public void GetUserData() throws IOException
@@ -75,15 +83,16 @@ public class ProfileActivity extends AppCompatActivity {
             String email = user.getEmail();
             Uri photoUrl = user.getPhotoUrl();
 
-            DatabaseReference userRef=mDatabase.child("user").child(user.getUid());
+            final String key=getActivity().getIntent().getStringExtra("key");
+            DatabaseReference userRef=mDatabase.child("user").child(key);
             userRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Traveller currentUser=dataSnapshot.getValue(Traveller.class);
-                    TextView fName=(TextView) findViewById(R.id.firstName);
-                    TextView lName=(TextView) findViewById(R.id.lastName);
-                    TextView phone=(TextView) findViewById(R.id.phoneNumber);
-                    TextView email=(TextView) findViewById(R.id.email);
+                    TextView fName=(TextView) getView().findViewById(R.id.firstname);
+                    TextView lName=(TextView) getView().findViewById(R.id.lastname);
+                    TextView phone=(TextView) getView().findViewById(R.id.phone);
+                    TextView email=(TextView) getView().findViewById(R.id.mail);
 
                     fName.setText(currentUser.firstname);
                     lName.setText(currentUser.lastname);
@@ -108,7 +117,7 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     // Local temp file has been created
                     Bitmap myBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    ImageView image=(ImageView) findViewById(R.id.profile);
+                    ImageView image=(ImageView) getView().findViewById(R.id.profile);
                     image.setImageBitmap(myBitmap);
                 }
             }).addOnFailureListener(new OnFailureListener() {

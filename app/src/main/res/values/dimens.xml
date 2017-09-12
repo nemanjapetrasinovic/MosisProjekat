@@ -32,5 +32,6 @@
     <dimen name="list_item_low_temperature_text_view_size">48dp</dimen>
     <dimen name="list_item_date_left_margin">16dp</dimen>
     <dimen name="list_item_date_start_margin">@dimen/list_item_date_left_margin</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 
 </resources>

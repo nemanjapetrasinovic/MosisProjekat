@@ -30,9 +30,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCallback {
+public class FriendInfoActivity extends FragmentActivity {
 
-    private GoogleMap mMap;
     private FirebaseDatabase database;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -47,9 +46,6 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_info);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         database = FirebaseDatabase.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -70,22 +66,10 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
         };
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         final String s=getIntent().getStringExtra("email");
-        key=getIntent().getStringExtra("key");*/
-
-
-        /*DatabaseReference userRef=mDatabase.child("user").child(key);
+        key=getIntent().getStringExtra("key");
+        DatabaseReference userRef=mDatabase.child("user").child(key);
         userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -98,10 +82,6 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
                 PhoneNumber.setText(t.phonenumber);
                 TextView Score=(TextView) findViewById(R.id.profile_info_score);
                 Score.setText(String.valueOf(t.score));
-
-                LatLng sydney = new LatLng(t.getLatitude(), t.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
                 StorageReference storageReference = storageRef.child(key+".jpg");
                 File localFile=null;
@@ -134,6 +114,6 @@ public class FriendInfoActivity extends FragmentActivity implements OnMapReadyCa
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });*/
+        });
     }
 }

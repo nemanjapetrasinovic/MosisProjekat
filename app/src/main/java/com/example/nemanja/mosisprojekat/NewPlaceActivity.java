@@ -28,6 +28,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -170,27 +171,64 @@ public class NewPlaceActivity extends AppCompatActivity {
                     place.setDescription(descEdit.getText().toString());
                     place.setImage("images/"+photoURI.getLastPathSegment());
                     place.setOwner(mAuth.getCurrentUser().getUid());
-                    //place.setDate(new Date());
-                    //place.setType(radioType);
+                    place.setDate(new Date());
+                    place.setType(radioType);
 
                     mDatabase= FirebaseDatabase.getInstance().getReference();
 
-                    Date currentTimeDate= Calendar.getInstance().getTime();
+                    //Date currentTimeDate= Calendar.getInstance().getTime();
 
-                    final String key=String.valueOf(currentTimeDate.getTime()+currentTimeDate.getDate());
+                    //final String key=String.valueOf(currentTimeDate.getTime()+currentTimeDate.getDate());
 
-                    DatabaseReference userPlacesRef=mDatabase.child("place/"+key);
-                    userPlacesRef.setValue(place);
-                    final String placeID=userPlacesRef.getKey();
+                    //DatabaseReference userPlacesRef=
+                    final String keyID=mDatabase.child("place").push().getKey();
+                    mDatabase.child("place").child(keyID).setValue(place);
 
-                    DatabaseReference userPlaceRef=mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/places");
-                    userPlaceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    /*userPlaceRef=mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/myplaces");
+                    vl=new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             numberOfPlaces=dataSnapshot.getChildrenCount();
-                            DatabaseReference r= mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/places/"+numberOfPlaces);
-                            r.setValue(key);
-                            long s=12345;
+                            DatabaseReference r= mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/myplaces/"+numberOfPlaces);
+                            r.setValue(keyID);
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    };
+                    userPlaceRef.addListenerForSingleValueEvent(vl);*/
+
+
+                    final DatabaseReference userRef = mDatabase.child("user").child(mAuth.getCurrentUser().getUid());
+                    userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Traveller me=dataSnapshot.getValue(Traveller.class);
+                            if(me.myPlaces==null)
+                                me.myPlaces=new ArrayList<String>();
+                            me.myPlaces.add(keyID);
+                            userRef.setValue(me);
+                            if(me.friends!=null){
+                                for(final String friend:me.friends){
+                                    DatabaseReference friendRef=mDatabase.child("user/"+friend+"/places");
+                                    friendRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            numberOfPlaces=dataSnapshot.getChildrenCount();
+                                            DatabaseReference r= mDatabase.child("user/"+friend+"/places/"+numberOfPlaces);
+                                            r.setValue(keyID);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            }
                         }
 
                         @Override
@@ -242,5 +280,4 @@ public class NewPlaceActivity extends AppCompatActivity {
                     break;
         }
     }
-
 }

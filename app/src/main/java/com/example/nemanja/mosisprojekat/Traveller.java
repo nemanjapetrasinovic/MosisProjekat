@@ -14,6 +14,8 @@ class Traveller {
     public float longitude;
     public String email;
     public List<String> places;
+    public List<String> visitedPlaces;
+    public List<String> myPlaces;
 
     public List<String> getPlaces() {
         return places;
@@ -96,5 +98,21 @@ class Traveller {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getVisitedPlaces() {
+        return visitedPlaces;
+    }
+
+    public void setVisitedPlaces(List<String> visitedPlaces) {
+        this.visitedPlaces = visitedPlaces;
+    }
+
+    public List<String> getMyPlaces() {
+        return myPlaces;
+    }
+
+    public void setMyPlaces(List<String> myPlaces) {
+        this.myPlaces = myPlaces;
     }
 }

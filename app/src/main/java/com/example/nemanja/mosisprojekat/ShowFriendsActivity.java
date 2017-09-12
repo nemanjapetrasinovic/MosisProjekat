@@ -108,7 +108,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                             d.start();
 
 
-                        /*DatabaseReference userRef=mDatabase.child("user").child(url);
+                        DatabaseReference userRef=mDatabase.child("user").child(url);
                         userRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(final DataSnapshot dataSnapshot) {
@@ -181,7 +181,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                                 // Failed to read value
                                 Log.w(TAG, "Failed to read value.", error.toException());
                             }
-                        });*/
+                        });
 
                         }
 
@@ -203,7 +203,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    Intent intent = new Intent(ShowFriendsActivity.this,FriendInfoActivity.class);
+                    Intent intent = new Intent(ShowFriendsActivity.this,InfoActivity.class);
                     intent.putExtra("email",marker.getSnippet());
                     intent.putExtra("key",markersMap.get(marker.getSnippet()));
                     startActivity(intent);

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="@drawable/gradient_orca">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -195,10 +196,11 @@
                 android:id="@+id/advanced_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Search"
-                android:layout_marginTop="5sp"
                 android:layout_marginBottom="5sp"
-                />
+                android:layout_marginTop="5sp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="Search"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
     </ScrollView>

@@ -84,7 +84,11 @@
         <activity android:name=".NewPlaceActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".RangListActivity" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity
+            android:name=".InfoActivity"
+            android:label="@string/title_activity_info"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -233,7 +233,29 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
-                if(t.friends!=null)
+                /*List<String> myPlaces=t.getMyPlaces();
+                if(myPlaces!=null) {
+                    for (String place : places) {
+                        DatabaseReference placeRef=mDatabase.child("user/"+mAuth.getCurrentUser().getUid()+"/myPlaces/"+place);
+                        placeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                DownloadPicture download=null;
+                                Place p=dataSnapshot.getValue(Place.class);
+                                download = new DownloadPicture(p, placesListAdapter);
+                                download.start();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }*/
+
+                /*if(t.friends!=null)
                     for(String url:t.friends){
                         DatabaseReference friendRef=mDatabase.child("user").child(url);
                         friendRef.addValueEventListener(new ValueEventListener() {
@@ -267,8 +289,7 @@ public class MainActivity extends AppCompatActivity
 
                             }
                         });
-                    }
-
+                    }*/
             }
 
             @Override

@@ -9,7 +9,7 @@
     tools:layout_editor_absoluteX="0dp">
 
     <ImageView
-        android:id="@+id/profilePicture"
+        android:id="@+id/profile"
         android:layout_width="134dp"
         android:layout_height="125dp"
         app:srcCompat="@mipmap/ic_launcher"

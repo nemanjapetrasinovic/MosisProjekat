@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    tools:context="com.example.nemanja.mosisprojekat.LoginActivity">
+    tools:context="com.example.nemanja.mosisprojekat.LoginActivity"
+    android:background="@drawable/gradient_orca">
 
     <EditText
         android:id="@+id/editText1"
@@ -14,7 +15,10 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:textColor="@android:color/white"
+        android:textColorHighlight="@android:color/white"
+        android:textColorHint="#bdc3c7" />
 
     <EditText
         android:id="@+id/editText2"
@@ -22,17 +26,24 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:textColor="@android:color/white"
+        android:textColorHighlight="@android:color/white"
+        android:textColorHint="#bdc3c7" />
 
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login" />
+        android:backgroundTint="@color/colorAccent"
+        android:text="Login"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register" />
+        android:backgroundTint="@color/colorAccent"
+        android:text="Register"
+        android:textColor="#FFFFFF" />
 </LinearLayout>

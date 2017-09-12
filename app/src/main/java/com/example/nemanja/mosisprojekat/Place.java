@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public class Place {
     public String image;
     public String owner;
     public List<String> friends;
-    /*public Date date;
+    public Date date;
     public String type;
 
     public Date getDate() {
@@ -31,7 +32,7 @@ public class Place {
 
     public void setType(String type) {
         this.type = type;
-    }*/
+    }
 
     public String getName() {
         return name;
