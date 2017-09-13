@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -182,7 +184,15 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
-        placesListAdapterViewHolder.iconView.setImageBitmap(pictures.get(place.getName()));
+        StorageReference storageRef;
+        storageRef=FirebaseStorage.getInstance().getReference().child(place.getImage());
+
+        Glide.with(mContext)
+                .using(new FirebaseImageLoader())
+                .load(storageRef)
+                .override(80,80)
+                .into(placesListAdapterViewHolder.iconView);
+        //placesListAdapterViewHolder.iconView.setImageBitmap(pictures.get(place.getName()));
         /****************
          * Name *
          ****************/
@@ -288,7 +298,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
     }
 
-    public class DownloadPictureThread extends Thread{
+    /*public class DownloadPictureThread extends Thread{
         public String url;
         public Bitmap picture;
         public PlacesListAdapterViewHolder p;
@@ -362,7 +372,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
             });
 
         }
-    }
+    }*/
 
 
 }

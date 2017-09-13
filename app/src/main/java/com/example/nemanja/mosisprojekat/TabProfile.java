@@ -106,7 +106,7 @@ public class TabProfile extends Fragment{
                 }
             });
 
-            String userID=user.getUid();
+            String userID=key;
             StorageReference storageReference = storageRef.child(userID+".jpg");
 
 

@@ -16,6 +16,7 @@ class Traveller {
     public List<String> places;
     public List<String> visitedPlaces;
     public List<String> myPlaces;
+    public String image;
 
     public List<String> getPlaces() {
         return places;
@@ -114,5 +115,13 @@ class Traveller {
 
     public void setMyPlaces(List<String> myPlaces) {
         this.myPlaces = myPlaces;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

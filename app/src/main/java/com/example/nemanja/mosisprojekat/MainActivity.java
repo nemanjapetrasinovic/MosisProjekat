@@ -218,10 +218,11 @@ public class MainActivity extends AppCompatActivity
                         placeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                DownloadPicture download=null;
+                                //DownloadPicture download=null;
                                 Place p=dataSnapshot.getValue(Place.class);
-                                download = new DownloadPicture(p, placesListAdapter);
-                                download.start();
+                                placesListAdapter.addToList(p);
+                                //download = new DownloadPicture(p, placesListAdapter);
+                                //download.start();
                             }
 
                             @Override
@@ -644,7 +645,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-        public class DownloadPicture extends Thread{
+        /*public class DownloadPicture extends Thread{
             public Place place;
             public Bitmap picture;
             public PlacesListAdapter p;
@@ -719,7 +720,7 @@ public class MainActivity extends AppCompatActivity
                 });
 
             }
-        }
+        }*/
 
 
             class LocationListener implements android.location.LocationListener
