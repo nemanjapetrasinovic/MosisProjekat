@@ -7,7 +7,7 @@ class Traveller {
     public String firstname;
     public String lastname;
     public String phonenumber;
-    public int score;
+    public double score;
     public List<String> friends;
     public String picture;
     public double latitude;
@@ -41,7 +41,7 @@ class Traveller {
         return phonenumber;
     }
 
-    public int getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -65,7 +65,7 @@ class Traveller {
         this.phonenumber = phonenumber;
     }
 
-    public void setScore(int score) {
+    public void setScore(double score) {
         this.score = score;
     }
 

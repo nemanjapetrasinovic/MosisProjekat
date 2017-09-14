@@ -73,6 +73,14 @@
                 android:textColorHighlight="@android:color/white"
                 android:textColorHint="#bdc3c7" />
 
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
+                android:text="Click to enter address"
+                android:textColor="@android:color/white" />
+
             <EditText
                 android:id="@+id/editTextAddress"
                 android:layout_width="match_parent"
@@ -81,6 +89,9 @@
                 android:hint="Address"
                 android:inputType="textPostalAddress"
                 android:textColor="@android:color/white"
+                android:focusable="false"
+                android:cursorVisible="true"
+                android:editable="false"
                 android:textColorHighlight="@android:color/white"
                 android:textColorHint="#bdc3c7" />
 

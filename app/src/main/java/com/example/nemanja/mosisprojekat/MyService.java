@@ -3,12 +3,16 @@ package com.example.nemanja.mosisprojekat;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 
 public class MyService extends Service {
 
     private int mNotificationId = 001;
+    NotificationManager mNotifyMgr;
+    NotificationCompat.Builder mBuilder;
 
     public MyService() {
     }
@@ -22,24 +26,15 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        final NotificationCompat.Builder mBuilder =
+        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_menu_camera)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
-        final NotificationManager mNotifyMgr =
+                        .setSmallIcon(R.drawable.ic_near_me_white_48px)
+                        .setContentTitle("Upoznaj Grad - Obavestenje")
+                        .setContentText("Nalazite se blizu lokacije od značaja!")
+                        .setSound(uri);
+        mNotifyMgr =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-
-        mBuilder.setVibrate(new long[] {125,75,125,275,200,275,125,75,125,275,200,600,200,600});
-
-        mNotifyMgr.notify(mNotificationId, mBuilder.build());
-        mNotificationId++;
-
-        for(int i=0;i<5;i++){
-            mNotifyMgr.notify(mNotificationId, mBuilder.build());
-            mNotificationId++;
-        }
+        mBuilder.setVibrate(new long[] {1000,200,1000,200});
     }
 }

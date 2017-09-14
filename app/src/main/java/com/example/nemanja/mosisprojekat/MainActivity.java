@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity
 
         DatabaseReference userRef = mDatabase.child("user").child(mAuth.getCurrentUser().getUid());
         final Gson gson=new Gson();
-        userRef.addValueEventListener(new ValueEventListener() {
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
@@ -374,20 +374,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(ShowFriendsOnMap);
         } else if (id == R.id.nav_slideshow) {
 
-            /*final NotificationCompat.Builder mBuilder =
-                    (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                            .setSmallIcon(R.drawable.ic_menu_camera)
-                            .setContentTitle("My notification")
-                            .setContentText("Hello World!");
-            final NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-
-            mBuilder.setVibrate(new long[] {125,75,125,275,200,275,125,75,125,275,200,600,200,600});
-
-            mNotifyMgr.notify(mNotificationId, mBuilder.build());
-            mNotificationId++;*/
-            Intent profile=new Intent(MainActivity.this.getApplicationContext(), ProfileActivity.class);
+            Intent profile=new Intent(MainActivity.this.getApplicationContext(), InfoActivity.class);
+            profile.putExtra("key",mAuth.getCurrentUser().getUid());
             startActivity(profile);
 
         } else if (id == R.id.nav_manage) {

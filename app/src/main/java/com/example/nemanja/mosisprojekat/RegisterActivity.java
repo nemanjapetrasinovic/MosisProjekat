@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,8 +19,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.*;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,6 +60,8 @@ public class RegisterActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private DatabaseReference mDatabase;
     private Uri selectedImage;
+    private Place place;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 101;
 
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -93,6 +106,24 @@ public class RegisterActivity extends AppCompatActivity {
         });
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+
+        Button address=(Button) findViewById(R.id.button2);
+        final Activity a=this;
+        address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                    .build(a);
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                }
+            }
+        });
     }
 
     @Override
@@ -220,20 +251,9 @@ public class RegisterActivity extends AppCompatActivity {
         t.setEmail(user.getEmail());
         t.setImage(userID+".jpg");
         t.setAddress(addresEdit.getText().toString());
-        Geocoder coder=new Geocoder(RegisterActivity.this.getApplicationContext());
-        List<Address> address;
-
-        try {
-            address = coder.getFromLocationName(t.getAddress(), 5);
-            if (address != null) {
-                Address location = address.get(0);
-                t.homelat=location.getLatitude();
-                t.homelon=location.getLongitude();
-            }
-        }
-        catch (Exception e){
-
-        }
+        LatLng homeLocation=place.getLatLng();
+        t.homelat=homeLocation.latitude;
+        t.homelon=homeLocation.longitude;
         mDatabase= FirebaseDatabase.getInstance().getReference();
         /*mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
         mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());
@@ -251,6 +271,22 @@ public class RegisterActivity extends AppCompatActivity {
             ImageView imageView = (ImageView) findViewById(R.id.imageView2);
             imageView.setImageURI(selectedImage);
 
+        }
+
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                place = PlaceAutocomplete.getPlace(this, data);
+                TextView address=(TextView) findViewById(R.id.editTextAddress);
+                address.setText(place.getAddress());
+                Log.i(TAG, "Place: " + place.getName());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
         }
 
     }
