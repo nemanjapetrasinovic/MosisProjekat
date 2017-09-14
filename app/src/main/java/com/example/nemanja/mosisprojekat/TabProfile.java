@@ -109,7 +109,6 @@ public class TabProfile extends Fragment{
             String userID=key;
             StorageReference storageReference = storageRef.child(userID+".jpg");
 
-
             final File localFile = File.createTempFile(userID, "jpg");
 
             storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {

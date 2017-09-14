@@ -10,13 +10,16 @@ class Traveller {
     public int score;
     public List<String> friends;
     public String picture;
-    public float latitude;
-    public float longitude;
+    public double latitude;
+    public double longitude;
     public String email;
     public List<String> places;
     public List<String> visitedPlaces;
     public List<String> myPlaces;
     public String image;
+    public String address;
+    public double homelat;
+    public double homelon;
 
     public List<String> getPlaces() {
         return places;
@@ -77,11 +80,11 @@ class Traveller {
     public void setPicture(String picture) {
         this.picture = picture;
     }
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -123,5 +126,13 @@ class Traveller {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

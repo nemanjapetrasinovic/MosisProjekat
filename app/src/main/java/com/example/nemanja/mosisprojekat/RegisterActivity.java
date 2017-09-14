@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -36,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -164,6 +167,7 @@ public class RegisterActivity extends AppCompatActivity {
         EditText nameEdit=(EditText) findViewById(R.id.editTextName);
         EditText lastnameEdit=(EditText) findViewById(R.id.editTextLastname);
         EditText phoneEdit=(EditText) findViewById(R.id.editTextPhone);
+        EditText addresEdit=(EditText) findViewById(R.id.editTextAddress);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -215,6 +219,21 @@ public class RegisterActivity extends AppCompatActivity {
         t.setPhonenumber(phoneEdit.getText().toString());
         t.setEmail(user.getEmail());
         t.setImage(userID+".jpg");
+        t.setAddress(addresEdit.getText().toString());
+        Geocoder coder=new Geocoder(RegisterActivity.this.getApplicationContext());
+        List<Address> address;
+
+        try {
+            address = coder.getFromLocationName(t.getAddress(), 5);
+            if (address != null) {
+                Address location = address.get(0);
+                t.homelat=location.getLatitude();
+                t.homelon=location.getLongitude();
+            }
+        }
+        catch (Exception e){
+
+        }
         mDatabase= FirebaseDatabase.getInstance().getReference();
         /*mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
         mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());

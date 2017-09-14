@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    tools:context="com.example.nemanja.mosisprojekat.RegisterActivity">
+    tools:context="com.example.nemanja.mosisprojekat.RegisterActivity"
+    android:background="@drawable/gradient_orca">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,7 +24,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Firstname"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
 
             <EditText
                 android:id="@+id/editTextLastname"
@@ -31,7 +35,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Lastname"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
 
             <EditText
                 android:id="@+id/editTextPhone"
@@ -39,7 +46,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Phone"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
 
             <EditText
                 android:id="@+id/editTextEmail"
@@ -47,7 +57,10 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
 
             <EditText
                 android:id="@+id/editTextPassword"
@@ -55,7 +68,21 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
+
+            <EditText
+                android:id="@+id/editTextAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Address"
+                android:inputType="textPostalAddress"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@android:color/white"
+                android:textColorHint="#bdc3c7" />
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -69,12 +96,14 @@
                 android:id="@+id/buttonAddPicture"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
                 android:text="Add Picture" />
 
             <Button
                 android:id="@+id/buttonCreateAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
                 android:text="Create account" />
         </LinearLayout>
     </ScrollView>
