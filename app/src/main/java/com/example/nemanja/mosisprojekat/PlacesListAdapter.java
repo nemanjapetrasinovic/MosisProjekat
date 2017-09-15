@@ -42,8 +42,8 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     private Geocoder geocoder;
     private ItemFilter mFilter = new ItemFilter();
 
-    private ArrayList<Place> lista;
-    private ArrayList<Place> originalnaLista = null;
+    private ArrayList<PlaceWrapper> lista;
+    private ArrayList<PlaceWrapper> originalnaLista = null;
     private String type = "all";
     private int radius = 20000;
     private double myLongitude;
@@ -102,16 +102,16 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
 
             FilterResults results = new FilterResults();
 
-            final List<Place> list = originalnaLista;
+            final List<PlaceWrapper> list = originalnaLista;
 
             int count = list.size();
-            final ArrayList<Place> nlist = new ArrayList<Place>(count);
+            final ArrayList<PlaceWrapper> nlist = new ArrayList<PlaceWrapper>(count);
 
             String filterableString ;
-            Place filterablePlace;
+            PlaceWrapper filterablePlace;
             for (int i = 0; i < count; i++) {
                 filterablePlace = list.get(i);
-                filterableString = filterablePlace.getName();
+                filterableString = filterablePlace.place.getName();
                 if (filterableString.toLowerCase().contains(filterString)) {
                     nlist.add(filterablePlace);
                 }
@@ -126,7 +126,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            lista = (ArrayList<Place>) results.values;
+            lista = (ArrayList<PlaceWrapper>) results.values;
             notifyDataSetChanged();
         }
 
@@ -140,8 +140,8 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     public PlacesListAdapter(@NonNull Context context, PlacesListAdapterOnClickHandler clickHandler) {
         mContext = context;
         mClickHandler = clickHandler;
-        lista = new ArrayList<Place>();
-        originalnaLista = new ArrayList<Place>();
+        lista = new ArrayList<PlaceWrapper>();
+        originalnaLista = new ArrayList<PlaceWrapper>();
         geocoder = new Geocoder(mContext, Locale.getDefault());
         pictures=new HashMap<String,Bitmap>();
     }
@@ -170,7 +170,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     public void onBindViewHolder(PlacesListAdapterViewHolder placesListAdapterViewHolder, int position) {
         //mCursor.moveToPosition(position);
 
-        Place place = lista.get(position);
+        Place place = lista.get(position).place;
 
         /****************
          * Profile Icon *
@@ -226,13 +226,13 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
         return lista.size();
     }
 
-    void swapCursor(ArrayList<Place> newList) {
+    void swapCursor(ArrayList<PlaceWrapper> newList) {
         lista = newList;
         notifyDataSetChanged();
     }
 
-    void addToList(Place t){
-        double distance = CalculationByDistance(t.getLatitude(), t.getLongitude(), myLatitude, myLongitude);
+    void addToList(PlaceWrapper t){
+        double distance = CalculationByDistance(t.place.getLatitude(), t.place.getLongitude(), myLatitude, myLongitude);
         if(distance < radius) {
             lista.add(t);
             originalnaLista.add(t);
@@ -290,7 +290,7 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
             //long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
             //long dateInMillis = mCursor.getLong(0);//hard fix
             //mClickHandler.onClick(dateInMillis);
-            String a = lista.get(adapterPosition).getOwner();
+            String a = lista.get(adapterPosition).placeKey;
             Toast.makeText(mContext,"Iz adaptera " + a, Toast.LENGTH_SHORT).show();
             mClickHandler.onClick(a);
         }

@@ -31,7 +31,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/gradient_orca">
 
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
           - To efficiently re-use complete layouts, you can use the <include/> tags to embed     -
@@ -41,13 +42,36 @@
           - layout code all over the place, and any changes we wanted to make, we'd have to make -
           - twice.                                                                               -
           - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-        <include
-            android:id="@+id/primary_place_info"
-            layout="@layout/place_info"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            />
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/primary_place_info"
+                layout="@layout/place_info"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.example.nemanja.mosisprojekat.MapsActivity" />
+
+        </LinearLayout>
 
         <!--<include
             android:id="@+id/extra_details"

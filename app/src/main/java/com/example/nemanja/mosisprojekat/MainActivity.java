@@ -213,14 +213,17 @@ public class MainActivity extends AppCompatActivity
 
                 List<String> places=t.getPlaces();
                 if(places!=null) {
-                    for (String place : places) {
+                    for (final String place : places) {
                         DatabaseReference placeRef=mDatabase.child("place/"+place);
                         placeRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 //DownloadPicture download=null;
                                 Place p=dataSnapshot.getValue(Place.class);
-                                placesListAdapter.addToList(p);
+                                PlaceWrapper pw=new PlaceWrapper();
+                                pw.place=p;
+                                pw.placeKey=place;
+                                placesListAdapter.addToList(pw);
                                 //download = new DownloadPicture(p, placesListAdapter);
                                 //download.start();
                             }
@@ -490,7 +493,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(String placeKey) {
-        Toast.makeText(this,"Iz maina " + placeKey, Toast.LENGTH_SHORT).show();
+        Intent placeInfo =new Intent(this,PlaceDetailActivity.class);
+        placeInfo.putExtra("placeKey",placeKey);
+        startActivity(placeInfo);
     }
 
     private class MyMainLocalReceiver extends BroadcastReceiver {

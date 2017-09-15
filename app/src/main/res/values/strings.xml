@@ -121,4 +121,5 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_info">InfoActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_place_detail">Map</string>
 </resources>
