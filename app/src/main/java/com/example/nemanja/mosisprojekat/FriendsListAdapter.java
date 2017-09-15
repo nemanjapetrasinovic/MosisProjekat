@@ -28,14 +28,14 @@ import java.util.List;
  * Created by Nemanja on 9/13/2017.
  */
 
-public class FriendsListAdapter extends ArrayAdapter<Traveller> {
+public class FriendsListAdapter extends ArrayAdapter<TravellerWrapper> {
 
     private FirebaseStorage storage;
     private StorageReference storageRef;
     View customview;
     private Context context;
 
-    public FriendsListAdapter(Context context, List<Traveller> travellers) {
+    public FriendsListAdapter(Context context, List<TravellerWrapper> travellers) {
         super(context,R.layout.friends_custom_list, travellers);
         this.context=context;
     }
@@ -46,14 +46,14 @@ public class FriendsListAdapter extends ArrayAdapter<Traveller> {
         LayoutInflater friendsListInflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         customview=friendsListInflater.inflate(R.layout.friends_custom_list,parent,false);
 
-        Traveller t=getItem(position);
+        TravellerWrapper t=getItem(position);
         TextView fname=(TextView) customview.findViewById(R.id.firstname1);
-        fname.setText(t.getFirstname());
+        fname.setText(t.traveller.getFirstname());
         TextView lname=(TextView) customview.findViewById(R.id.lastname1);
-        lname.setText(t.getLastname());
+        lname.setText(t.traveller.getLastname());
 
         ImageView picture=(ImageView) customview.findViewById(R.id.picture1);
-        storageRef=FirebaseStorage.getInstance().getReference().child(t.getImage());
+        storageRef=FirebaseStorage.getInstance().getReference().child(t.traveller.getImage());
         Glide.with(context)
                 .using(new FirebaseImageLoader())
                 .load(storageRef)

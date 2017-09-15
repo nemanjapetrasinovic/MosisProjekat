@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ import java.util.List;
 public class TabFriends extends Fragment {
     @Nullable
     private static final String TAG = NewPlaceActivity.class.getSimpleName();
-    private List<Traveller> travellers;
+    private List<TravellerWrapper> travellers;
     FriendsListAdapter friendsListAdapter;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -55,7 +58,7 @@ public class TabFriends extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        travellers = new ArrayList<Traveller>();
+        travellers = new ArrayList<TravellerWrapper>();
 
         friendsListAdapter = new FriendsListAdapter(TabFriends.this.getContext(), travellers);
         ListView friendListView = (ListView) getActivity().findViewById(R.id.friendslist);
@@ -80,6 +83,20 @@ public class TabFriends extends Fragment {
         storageRef = storage.getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         getFriends();
+
+        friendListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object p=parent.getItemAtPosition(position);
+                Gson gson=new Gson();
+                String json=gson.toJson(p);
+                TravellerWrapper tw=gson.fromJson(json,TravellerWrapper.class);
+
+                Intent i=new Intent(getActivity(),InfoActivity.class);
+                i.putExtra("key",tw.travellerKey);
+                startActivity(i);
+            }
+        });
     }
 
     public void getFriends() {
@@ -96,7 +113,10 @@ public class TabFriends extends Fragment {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Traveller f = dataSnapshot.getValue(Traveller.class);
-                                travellers.add(f);
+                                TravellerWrapper tw=new TravellerWrapper();
+                                tw.traveller=f;
+                                tw.travellerKey=friend;
+                                travellers.add(tw);
                                 friendsListAdapter.updateList();
                             }
 

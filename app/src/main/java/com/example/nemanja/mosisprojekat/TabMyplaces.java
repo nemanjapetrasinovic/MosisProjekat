@@ -1,5 +1,6 @@
 package com.example.nemanja.mosisprojekat;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,7 @@ import java.util.List;
 public class TabMyplaces extends Fragment {
 
     private static final String TAG = NewPlaceActivity.class.getSimpleName();
-    private List<Place> places;
+    private List<PlaceWrapper> places;
     MyPlacesListAdapter myPlacesListAdapter;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -49,7 +52,7 @@ public class TabMyplaces extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        places=new ArrayList<Place>();
+        places=new ArrayList<PlaceWrapper>();
         myPlacesListAdapter = new MyPlacesListAdapter(TabMyplaces.this.getContext(),places);
         ListView myplacesListView = (ListView) getActivity().findViewById(R.id.myPlacesListview);
         myplacesListView.setAdapter(myPlacesListAdapter);
@@ -72,6 +75,20 @@ public class TabMyplaces extends Fragment {
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        myplacesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object p=parent.getItemAtPosition(position);
+                Gson gson=new Gson();
+                String json=gson.toJson(p);
+                PlaceWrapper pw=gson.fromJson(json,PlaceWrapper.class);
+
+                Intent i=new Intent(getActivity(),PlaceDetailActivity.class);
+                i.putExtra("placeKey",pw.placeKey);
+                startActivity(i);
+            }
+        });
         getMyPlaces();
     }
 
@@ -90,7 +107,10 @@ public class TabMyplaces extends Fragment {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Place p = dataSnapshot.getValue(Place.class);
-                                places.add(p);
+                                PlaceWrapper pw=new PlaceWrapper();
+                                pw.place=p;
+                                pw.placeKey=place;
+                                places.add(pw);
                                 myPlacesListAdapter.updateList();
                             }
 

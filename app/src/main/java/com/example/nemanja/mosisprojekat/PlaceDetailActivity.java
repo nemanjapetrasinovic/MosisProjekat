@@ -60,12 +60,14 @@ public class PlaceDetailActivity extends FragmentActivity implements OnMapReadyC
 
                 LatLng placeLoc=new LatLng(p.getLatitude(),p.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(placeLoc).title("Place location"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(placeLoc));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placeLoc,12.0f));
 
                 TextView placeInfoName=(TextView) findViewById(R.id.place_info_name);
                 placeInfoName.setText(p.getName());
                 TextView placeInfoDesc=(TextView) findViewById(R.id.place_info_desc);
                 placeInfoDesc.setText(p.getDescription());
+                TextView placeInfoType=(TextView) findViewById(R.id.place_info_type);
+                placeInfoType.setText(p.getType());
 
                 ImageView picture=(ImageView) findViewById(R.id.place_info_icon);
 
