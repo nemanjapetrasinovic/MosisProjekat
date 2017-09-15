@@ -45,7 +45,8 @@ public class RangListActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 Traveller p=dataSnapshot.getValue(Traveller.class);
-                travellers.add(p);
+                travellers.add(0,p);
+                //travellers.add(p);
                 rangListadapter.updateList();
             }
 

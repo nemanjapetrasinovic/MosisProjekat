@@ -11,7 +11,7 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/ic_filter_list_white_48px"
         android:title="@string/action_settings"
         app:showAsAction="ifRoom" />
 </menu>

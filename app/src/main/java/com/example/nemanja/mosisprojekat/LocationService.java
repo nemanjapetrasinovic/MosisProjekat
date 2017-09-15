@@ -140,6 +140,8 @@ public class LocationService extends Service {
 
                                           double points = home.distanceTo(placeLoc);
 
+                                          if(t.score==-1)
+                                              t.score=0;
                                           t.score=t.score+points;
                                           userRef.setValue(t);
                                       }

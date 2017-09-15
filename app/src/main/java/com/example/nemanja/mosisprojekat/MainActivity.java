@@ -35,11 +35,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -343,6 +346,17 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        Switch s=(Switch) findViewById(R.id.switch1);
+        s.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                    startService(new Intent(MainActivity.this.getApplicationContext(),LocationServices.class));
+                else
+                    stopService(new Intent(MainActivity.this.getApplicationContext(), LocationService.class));
+            }
+        });
+
         return true;
     }
 
@@ -383,7 +397,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_manage) {
 
-            startService(new Intent(this,MyService.class));
+            Intent ranglist=new Intent(MainActivity.this.getApplicationContext(),RangListActivity.class);
+            startActivity(ranglist);
+            //startService(new Intent(this,MyService.class));
 
         } else if (id == R.id.nav_share) {
             Intent bluetooth = new Intent(MainActivity.this, FriendsSearchActivity.class);

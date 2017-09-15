@@ -93,11 +93,13 @@ public class TabProfile extends Fragment{
                     TextView lName=(TextView) getView().findViewById(R.id.lastname);
                     TextView phone=(TextView) getView().findViewById(R.id.phone);
                     TextView email=(TextView) getView().findViewById(R.id.mail);
+                    TextView score=(TextView) getView().findViewById(R.id.score);
 
                     fName.setText(currentUser.firstname);
                     lName.setText(currentUser.lastname);
                     phone.setText(currentUser.phonenumber);
                     email.setText(currentUser.email);
+                    score.setText(String.valueOf(currentUser.score));
                 }
 
                 @Override

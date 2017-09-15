@@ -16,16 +16,16 @@
             android:title="Show friends" />
         <item
             android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:icon="@drawable/ic_assignment_white_48px"
+            android:title="Ranglist" />
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:icon="@drawable/ic_bluetooth_white_48px"
+                android:title="Find friends" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
