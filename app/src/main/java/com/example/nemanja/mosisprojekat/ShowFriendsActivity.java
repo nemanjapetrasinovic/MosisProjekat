@@ -109,7 +109,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
 
 
                         DatabaseReference userRef=mDatabase.child("user").child(url);
-                        userRef.addValueEventListener(new ValueEventListener() {
+                        /*userRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(final DataSnapshot dataSnapshot) {
                                 // This method is called once with the initial value and again
@@ -181,7 +181,7 @@ public class ShowFriendsActivity extends FragmentActivity implements OnMapReadyC
                                 // Failed to read value
                                 Log.w(TAG, "Failed to read value.", error.toException());
                             }
-                        });
+                        });*/
 
                         }
 

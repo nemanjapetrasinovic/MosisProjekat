@@ -406,8 +406,8 @@ public class MainActivity extends AppCompatActivity
             startActivity(bluetooth);
         } else if (id == R.id.nav_send) {
 
-            Intent rang=new Intent(MainActivity.this,RangListActivity.class);
-            startActivity(rang);
+            Intent placesMap=new Intent(MainActivity.this,PlacesMapsActivity.class);
+            startActivity(placesMap);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
