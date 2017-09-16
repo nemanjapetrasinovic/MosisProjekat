@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,7 +41,7 @@ import static android.location.LocationManager.GPS_PROVIDER;
 
 public class NewPlaceActivity extends AppCompatActivity {
 
-    protected LocationManager mLocationManager;
+    //protected LocationManager mLocationManager;
     protected Context context;
 
     private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
@@ -58,46 +59,10 @@ public class NewPlaceActivity extends AppCompatActivity {
     private double lon;
     private double lat;
 
-    class LocationListener implements android.location.LocationListener
-    {
-        Location mLastLocation;
-        Location currLocation;
+    LocationManager mLocationManager;
 
-        public LocationListener(String provider)
-        {
-            Log.e(TAG, "LocationListener " + provider);
-            mLastLocation = new Location(provider);
-        }
+    private android.location.LocationListener mLocationListener;
 
-
-        @Override
-        public void onLocationChanged(Location location)
-        {
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-            currLocation = location;
-            Log.e(TAG, "onLocationChanged: " + location);
-            mLastLocation.set(location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider)
-        {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider)
-        {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras)
-        {
-            Log.e(TAG, "onStatusChanged: " + provider);
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +72,34 @@ public class NewPlaceActivity extends AppCompatActivity {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
 
+        mLocationListener=new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                lon=location.getLongitude();
+                lat=location.getLatitude();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
         try {
-            NewPlaceActivity.LocationListener GPSListener = new NewPlaceActivity.LocationListener(GPS_PROVIDER);
+            //NewPlaceActivity.LocationListener GPSListener = new NewPlaceActivity.LocationListener(GPS_PROVIDER);
             mLocationManager.requestLocationUpdates(
                     GPS_PROVIDER, 0, 0,
-                    GPSListener);
+                    mLocationListener);
         } catch (java.lang.SecurityException ex) {
             Log.i(TAG, "fail to request location update, ignore", ex);
         } catch (IllegalArgumentException ex) {

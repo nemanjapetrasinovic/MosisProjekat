@@ -59,33 +59,12 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
     DownloadThread d;
     private double latitude;
     private double longitude;
-    private static final int LOCATION_INTERVAL = 5 * 60 * 1000;//5min
-    //private static final int LOCATION_INTERVAL = 10000;//1sec
-    private static final float LOCATION_DISTANCE = 10f;//meters
+    //private static final int LOCATION_INTERVAL = 5 * 60 * 1000;//5min
+    private static final int LOCATION_INTERVAL = 10000;//1sec
+    private static final float LOCATION_DISTANCE = 1f;//meters
     LocationManager mLocationManager;
 
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
+    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +94,29 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
+        mLocationListener=new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                longitude=location.getLongitude();
+                latitude=location.getLatitude();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -130,24 +132,25 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL,
                 LOCATION_DISTANCE, mLocationListener);
 
-        TextView radius=(TextView) findViewById(R.id.textView3);
+        final TextView radius = (TextView) findViewById(R.id.textView3);
         radius.setText(String.valueOf(0));
 
-        Button filters=(Button) findViewById(R.id.button4);
+        Button filters = (Button) findViewById(R.id.button4);
         filters.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetPlaces("200000");
+                mMap.clear();
+                GetPlaces(String.valueOf(radius.getText()));
             }
         });
 
-        SeekBar seekBar=(SeekBar) findViewById(R.id.seekBar);
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                TextView radius=(TextView) findViewById(R.id.textView3);
+                TextView radius = (TextView) findViewById(R.id.textView3);
                 radius.setText(String.valueOf(progress));
-                seekBarValue=String.valueOf(progress);
+                seekBarValue = String.valueOf(progress);
             }
 
             @Override
@@ -175,27 +178,37 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
 
         // Add a marker in Sydney and move the camera
         /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
-        GetPlaces("200000");
+        GetPlaces("100000000");
 
     }
 
-    public void GetPlaces(final String radius)
-    {
-        DatabaseReference userRef=mDatabase.child("user/"+mAuth.getCurrentUser().getUid());
+    public void GetPlaces(final String radius) {
+        DatabaseReference userRef = mDatabase.child("user/" + mAuth.getCurrentUser().getUid());
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Traveller t=dataSnapshot.getValue(Traveller.class);
+                Traveller t = dataSnapshot.getValue(Traveller.class);
 
-                if(t.places!=null){
-                    for(final String place:t.places){
-                        d=new DownloadThread(place,radius);
+                if (t.places != null) {
+                    for (final String place : t.places) {
+                        d = new DownloadThread(place, radius);
                         d.start();
 
                         try {
@@ -214,15 +227,15 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
         });
     }
 
-    public class DownloadThread extends Thread{
+    public class DownloadThread extends Thread {
         public String p;
         Place place;
         String radius;
 
-        public DownloadThread(String p,String radius){
-            this.p=p;
-            this.radius=radius;
-            place=new Place();
+        public DownloadThread(String p, String radius) {
+            this.p = p;
+            this.radius = radius;
+            place = new Place();
         }
 
         @Override
@@ -230,15 +243,25 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
             super.run();
 
 
-            final DatabaseReference placeRef=FirebaseDatabase.getInstance().getReference().child("place/"+p);
+            final DatabaseReference placeRef = FirebaseDatabase.getInstance().getReference().child("place/" + p);
             placeRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     Place p = dataSnapshot.getValue(Place.class);
-                    place=p;
+                    place = p;
 
+                    /*if (ActivityCompat.checkSelfPermission(PlacesMapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PlacesMapsActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL,
-                            LOCATION_DISTANCE, mLocationListener);
+                            LOCATION_DISTANCE, mLocationListener);*/
 
                     Location placeLocation=new Location(LocationManager.GPS_PROVIDER);
                     placeLocation.setLatitude(p.getLatitude());
@@ -248,7 +271,8 @@ public class PlacesMapsActivity extends FragmentActivity implements OnMapReadyCa
                     myLoc.setLatitude(latitude);
                     myLoc.setLongitude(longitude);
 
-                    if(myLoc.distanceTo(placeLocation)<=Double.parseDouble(radius)) {
+                    double distance=myLoc.distanceTo(placeLocation);
+                    if(distance<=Double.parseDouble(radius)) {
                         String placeimage = place.getImage();
                         StorageReference storageReference = storageRef.child(placeimage);
                         File localFile = null;
