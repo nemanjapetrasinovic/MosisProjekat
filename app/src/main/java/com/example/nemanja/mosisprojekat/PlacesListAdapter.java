@@ -3,7 +3,6 @@ package com.example.nemanja.mosisprojekat;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
@@ -19,15 +18,12 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.storage.images.FirebaseImageLoader;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +44,24 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     private int radius = 20000;
     private double myLongitude;
     private double myLatitude;
+    private Date dateFrom;
+    private Date dateTo;
+
+    public Date getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
+    }
 
     public Context getmContext() {
         return mContext;
@@ -234,9 +248,28 @@ class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.PlacesLis
     void addToList(PlaceWrapper t){
         double distance = CalculationByDistance(t.place.getLatitude(), t.place.getLongitude(), myLatitude, myLongitude);
         if(distance < radius) {
-            lista.add(t);
-            originalnaLista.add(t);
-            notifyDataSetChanged();
+            if(type.compareTo("all") == 0) {
+                Date dateAdded = t.place.getDate();
+                int gornja = dateAdded.compareTo(dateTo);
+                int donja = dateAdded.compareTo(dateFrom);
+
+                if (donja >= 0 && gornja <= 0) {
+                    lista.add(t);
+                    originalnaLista.add(t);
+                    notifyDataSetChanged();
+                }
+            }
+            else if(type.compareTo(t.place.type) == 0){
+                Date dateAdded = t.place.getDate();
+                int gornja = dateAdded.compareTo(dateTo);
+                int donja = dateAdded.compareTo(dateFrom);
+
+                if (donja >= 0 && gornja <= 0) {
+                    lista.add(t);
+                    originalnaLista.add(t);
+                    notifyDataSetChanged();
+                }
+            }
         }
     }
 

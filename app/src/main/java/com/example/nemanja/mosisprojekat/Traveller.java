@@ -21,6 +21,17 @@ class Traveller {
     public double homelat;
     public double homelon;
 
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public String macAddress;
+
+
     public List<String> getPlaces() {
         return places;
     }

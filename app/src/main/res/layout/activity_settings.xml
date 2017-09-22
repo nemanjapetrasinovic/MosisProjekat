@@ -42,7 +42,7 @@
 
                 <EditText
                     android:id="@+id/radiusEdit"
-                    android:layout_width="100dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="291dp"
                     android:layout_marginStart="291dp"
@@ -140,6 +140,22 @@
                     android:onClick="onRadioButtonClicked"
                     android:textColor="#FFFFFF"
                     android:text="Sea" />
+
+                <RadioButton
+                    android:id="@+id/radioOtherSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:textColor="#FFFFFF"
+                    android:text="Other" />
+
+                <RadioButton
+                    android:id="@+id/radioAllSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
+                    android:textColor="#FFFFFF"
+                    android:text="All" />
             </RadioGroup>
 
 
@@ -184,7 +200,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:textColor="#FFFFFF"
                     android:layout_marginTop="0dp"
-                    android:onClick="datePicker"/>
+                    android:onClick="datePickerFrom"/>
 
                 <EditText
                     android:id="@+id/edit_from"
@@ -232,7 +248,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:textColor="#FFFFFF"
                     android:layout_marginTop="0dp"
-                    android:onClick="datePicker"/>
+                    android:onClick="datePickerTo"/>
 
                 <EditText
                     android:id="@+id/edit_to"

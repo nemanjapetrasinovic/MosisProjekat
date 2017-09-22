@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.nemanja.mosisprojekat.Bluetooth_Activity"
+    app:itemTextColor="#FFFFFF"
+    android:background="@drawable/gradient_orca">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/friendsToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:titleTextColor="#ffffff"
+        android:subtitleTextColor="#ffffff"
+        android:elevation="4dp"/>
+        <!--android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="My Friends"
+        android:id="@+id/txtFriendsList"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Search new friends"
+        android:id="@+id/txtSearchList"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/txtFriendsList"
+        android:id="@+id/listViewParied"
+        android:layout_marginTop="20dp">
+    </ListView>
+
+    <ListView
+        android:id="@+id/listViewAlldevices"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/txtSearchList"
+        android:layout_marginTop="20dp"
+        android:visibility="visible"></ListView>
+
+
+</RelativeLayout>

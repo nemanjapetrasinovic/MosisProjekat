@@ -3,7 +3,10 @@ package com.example.nemanja.mosisprojekat;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,22 +16,24 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Calendar;
-
+import java.util.Date;
 
 
 public class SettingsActivity extends AppCompatActivity {
 
     private String radioType;
     private int radius;
-
+    private static Date dateFrom;
+    private static Date dateTo;
 
     private DatePicker datePicker;
     private Calendar calendar;
-    private TextView dateView;
+    private static TextView dateViewFrom;
+    private static TextView dateViewTo;
     private int year, month, day;
+    static boolean from = true;
 
 
     @Override
@@ -66,6 +71,15 @@ public class SettingsActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putInt("radius", radius);
                 bundle.putString("type", radioType);
+
+                bundle.putInt("dateFromYear", dateFrom.getYear());
+                bundle.putInt("dateFromMonth", dateFrom.getMonth());
+                bundle.putInt("dateFromDate", dateFrom.getDate());
+
+                bundle.putInt("dateToYear", dateTo.getYear());
+                bundle.putInt("dateToMonth", dateTo.getMonth());
+                bundle.putInt("dateToDate", dateTo.getDate());
+
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -74,15 +88,11 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
-        showDialog(999);
+        //howDialog(999);
 
-        dateView = (TextView) findViewById(R.id.edit_from);
-        calendar = Calendar.getInstance();
-        year = calendar.get(Calendar.YEAR);
+        dateViewFrom = (TextView) findViewById(R.id.edit_from);
+        dateViewTo = (TextView) findViewById(R.id.edit_to);
 
-        month = calendar.get(Calendar.MONTH);
-        day = calendar.get(Calendar.DAY_OF_MONTH);
-        showDate(year, month+1, day);
     }
 
     @Override
@@ -129,15 +139,57 @@ public class SettingsActivity extends AppCompatActivity {
                 if (checked)
                     radioType = "Sea";
                 break;
+            case R.id.radioOtherSearch:
+                if (checked)
+                    radioType = "Other";
+                break;
+            case R.id.radioAllSearch:
+                if (checked)
+                    radioType = "all";
+                break;
         }
     }
 
-    /*public void datePicker(View view){
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            showDate(year, month, day);
+        }
+    }
+
+    public void datePickerFrom(View view){
+        from  = true;
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.show(getSupportFragmentManager(), "Date picker");
     }
 
+    public void datePickerTo(View view){
+        from = false;
+        DatePickerFragment fragment = new DatePickerFragment();
+        fragment.show(getSupportFragmentManager(), "Date picker");
+    }
+    public void datePicker(View view){
+        DatePickerFragment fragment = new DatePickerFragment();
+        fragment.show(getSupportFragmentManager(), "Date picker");
+    }
+
+
+/*
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setDate(final Calendar calendar) {
         final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
@@ -145,14 +197,27 @@ public class SettingsActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.edit_from))
                 .setText(dateFormat.format(calendar.getTime()));
 
-    }
-
+    }*/
+/*
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar cal = new GregorianCalendar(year, month, day);
         setDate(cal);
     }*/
 
+    private static void showDate(int year, int month, int day) {
+        if(from == true){
+            dateViewFrom.setText(new StringBuilder().append(day).append("/")
+                    .append(month + 1).append("/").append(year));
+            dateFrom = new Date(year, month, day);
+        }
+        else{
+            dateViewTo.setText(new StringBuilder().append(day).append("/")
+                    .append(month + 1).append("/").append(year));
+            dateTo = new Date(year, month, day);
+        }
+    }
+    /*
     @SuppressWarnings("deprecation")
     public void setDate(View view) {
         showDialog(999);
@@ -187,7 +252,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void showDate(int year, int month, int day) {
         dateView.setText(new StringBuilder().append(day).append("/")
                 .append(month).append("/").append(year));
-    }
+    }*/
 }
 
 

@@ -94,7 +94,15 @@
             android:label="@string/title_activity_place_detail" />
         <activity
             android:name=".PlacesMapsActivity"
-            android:label="@string/title_activity_places_maps"></activity>
+            android:label="@string/title_activity_places_maps" />
+        <activity android:name=".Bluetooth_Activity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="Find friends">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.nemanja.mosisprojekat.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

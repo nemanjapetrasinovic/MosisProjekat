@@ -61,6 +61,7 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static android.location.LocationManager.GPS_PROVIDER;
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity
 
     private String radio = "all";
     private int radius = 20000;
+    private Date dateFrom = new Date(2017 - 1900, 3, 3);
+    private Date dateTo = new Date();
 
     Intent intentMyService;
     ComponentName service;
@@ -115,6 +118,22 @@ public class MainActivity extends AppCompatActivity
             String type = bundle.getString("type");
             radius = r;
             radio = type;
+
+            int yearFrom = bundle.getInt("dateFromYear");
+            int monthFrom = bundle.getInt("dateFromMonth");
+            int dayFrom = bundle.getInt("dateFromDate");
+
+            int yearTo = bundle.getInt("dateToYear");
+            int monthTo = bundle.getInt("dateToMonth");
+            int dayTo = bundle.getInt("dateToDate");
+
+            dateFrom = new Date(yearFrom - 1900, monthFrom, dayFrom);
+            dateTo = new Date(yearTo - 1900, monthTo, dayTo);
+
+            //long from = Date.parse(bundle.getString("dateFrom"));
+            //dateFrom = new Date(Date.parse(bundle.getString("dateFrom")));
+            //dateTo = new Date(Date.parse(bundle.getString("dateTo")));
+
         }
         catch(Exception e){
 
@@ -194,6 +213,8 @@ public class MainActivity extends AppCompatActivity
         placesListAdapter = new PlacesListAdapter(this, this);
         placesListAdapter.setType(radio);
         placesListAdapter.setRadius(radius);
+        placesListAdapter.setDateFrom(dateFrom);
+        placesListAdapter.setDateTo(dateTo);
 
         mRecyclerView.setAdapter(placesListAdapter);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(),
@@ -402,7 +423,8 @@ public class MainActivity extends AppCompatActivity
             //startService(new Intent(this,MyService.class));
 
         } else if (id == R.id.nav_share) {
-            Intent bluetooth = new Intent(MainActivity.this, FriendsSearchActivity.class);
+            //Intent bluetooth = new Intent(MainActivity.this, FriendsSearchActivity.class);
+            Intent bluetooth = new Intent(MainActivity.this, Bluetooth_Activity.class);
             startActivity(bluetooth);
         } else if (id == R.id.nav_send) {
 

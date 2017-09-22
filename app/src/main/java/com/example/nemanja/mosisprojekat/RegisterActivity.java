@@ -1,19 +1,15 @@
 package com.example.nemanja.mosisprojekat;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,17 +21,13 @@ import android.widget.Toast;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,10 +39,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
@@ -124,6 +112,11 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+        int permCheck = 0;
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.BLUETOOTH},
+                permCheck);
     }
 
     @Override
@@ -251,9 +244,21 @@ public class RegisterActivity extends AppCompatActivity {
         t.setEmail(user.getEmail());
         t.setImage(userID+".jpg");
         t.setAddress(addresEdit.getText().toString());
-        LatLng homeLocation=place.getLatLng();
-        t.homelat=homeLocation.latitude;
-        t.homelon=homeLocation.longitude;
+        try {
+            LatLng homeLocation = place.getLatLng();
+            t.homelat = homeLocation.latitude;
+            t.homelon = homeLocation.longitude;
+        }
+        catch (Exception e){
+            t.homelat = 45;
+            t.homelon = 45;
+        }
+        BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
+        if(ba != null)
+            t.setMacAddress(ba.getAddress());
+        else
+            t.setMacAddress("not available");
+
         mDatabase= FirebaseDatabase.getInstance().getReference();
         /*mDatabase.child("user").child(user.getUid()).child("firstname").setValue(nameEdit.getText().toString());
         mDatabase.child("user").child(user.getUid()).child("lastname").setValue(lastnameEdit.getText().toString());
